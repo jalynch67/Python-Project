@@ -9,7 +9,7 @@
   --danger: #b94343;
   --danger-dark: #963636;
   --border: rgba(22, 17, 15, 0.12);
-  --shadow: 0 18px 40px rgba(27, 18, 10, 0.12);
+  --shadow: 0 14px 32px rgba(27, 18, 10, 0.1);
 }
 
 html {
@@ -37,13 +37,13 @@ body {
 }
 
 .site-header nav {
-  padding: 18px 0;
+  padding: 14px 0;
 }
 
 .brand-logo {
   color: white;
   text-decoration: none;
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 900;
   letter-spacing: -0.8px;
 }
@@ -55,15 +55,16 @@ body {
 .nav-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 
 .nav-links a {
   color: rgba(255, 255, 255, 0.84);
   text-decoration: none;
   font-weight: 700;
-  padding: 8px 12px;
+  padding: 7px 11px;
   border-radius: 999px;
+  font-size: 14px;
 }
 
 .nav-links a:hover {
@@ -73,18 +74,36 @@ body {
 
 /* Layout */
 .page-shell {
-  padding-top: 28px;
-  padding-bottom: 48px;
+  padding-top: 20px;
+  padding-bottom: 40px;
 }
 
 .flash-messages {
-  margin-bottom: 18px;
+  margin-bottom: 14px;
+}
+
+.page-alerts {
+  margin: -6px 0 22px;
+}
+
+.page-alerts .alert {
+  border: none;
+  border-radius: 18px;
+  background: rgba(50, 122, 69, 0.14);
+  color: #286338;
+  font-weight: 800;
+  box-shadow: var(--shadow);
+}
+
+.reading-card,
+.rating-area {
+  scroll-margin-top: 24px;
 }
 
 /* Hero sections */
 .home-hero,
 .hero-panel {
-  border-radius: 28px;
+  border-radius: 24px;
   color: white;
   background:
     linear-gradient(135deg, rgba(23, 63, 53, 0.96), rgba(22, 17, 15, 0.94)),
@@ -96,15 +115,15 @@ body {
 }
 
 .home-hero {
-  min-height: 440px;
+  min-height: 360px;
   display: flex;
   align-items: center;
-  padding: 54px;
+  padding: 42px;
 }
 
 .hero-panel {
-  padding: 42px;
-  margin-bottom: 30px;
+  padding: 30px 34px;
+  margin-bottom: 22px;
 }
 
 .home-hero-content {
@@ -112,35 +131,36 @@ body {
 }
 
 .eyebrow {
-  margin: 0 0 8px;
+  margin: 0 0 7px;
   color: var(--gold);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 900;
-  letter-spacing: 1.3px;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
 }
 
 .home-hero h1,
 .hero-panel h1 {
-  margin: 0 0 14px;
-  font-size: clamp(36px, 5vw, 64px);
+  margin: 0 0 10px;
+  font-size: clamp(32px, 4.4vw, 54px);
   font-weight: 900;
-  letter-spacing: -2px;
+  letter-spacing: -1.5px;
 }
 
 .home-hero p,
 .hero-panel p {
   max-width: 760px;
   color: rgba(255, 255, 255, 0.84);
-  font-size: 18px;
-  line-height: 1.65;
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 0;
 }
 
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 26px;
+  margin-top: 22px;
 }
 
 /* Bootstrap button styling */
@@ -186,8 +206,8 @@ body {
 .feature-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
-  margin-top: 28px;
+  gap: 18px;
+  margin-top: 24px;
 }
 
 .feature-card,
@@ -195,22 +215,23 @@ body {
 .empty-state {
   background: rgba(255, 250, 242, 0.88);
   border: 1px solid var(--border);
-  border-radius: 24px;
+  border-radius: 22px;
   box-shadow: var(--shadow);
 }
 
 .feature-card {
-  padding: 28px;
+  padding: 24px;
 }
 
 .feature-card h3 {
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 900;
 }
 
 .feature-card p {
   color: var(--muted);
-  line-height: 1.6;
+  line-height: 1.55;
+  margin-bottom: 0;
 }
 
 /* Section headings */
@@ -219,27 +240,29 @@ body {
   justify-content: space-between;
   gap: 20px;
   align-items: end;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .section-heading h2 {
   margin: 0;
-  font-size: 34px;
+  font-size: 28px;
   font-weight: 900;
-  letter-spacing: -1px;
+  letter-spacing: -0.8px;
 }
 
 .section-subtitle {
   max-width: 560px;
   margin: 0;
   color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
 }
 
 /* Book grid/cards */
 .book-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
+  gap: 20px;
 }
 
 .book-card {
@@ -248,7 +271,7 @@ body {
   flex-direction: column;
   background: rgba(255, 250, 242, 0.96);
   border: 1px solid var(--border);
-  border-radius: 24px;
+  border-radius: 22px;
   overflow: hidden;
   box-shadow: var(--shadow);
   transition:
@@ -257,87 +280,92 @@ body {
 }
 
 .book-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 24px 48px rgba(27, 18, 10, 0.18);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 42px rgba(27, 18, 10, 0.16);
 }
 
 .cover-wrap {
   background: linear-gradient(180deg, #efe0c9, #fff8eb);
-  padding: 18px;
+  padding: 12px;
 }
 
 .book-cover {
   width: 100%;
-  height: 310px;
+  height: 250px;
   object-fit: contain;
   background: #eadcc8;
-  border-radius: 18px;
-  padding: 8px;
+  border-radius: 16px;
+  padding: 6px;
 }
 
 .book-content {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  padding: 18px;
+  padding: 14px;
 }
 
 .book-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 6px;
+  margin-bottom: 9px;
 }
 
 .book-meta span,
 .subject-list span {
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 800;
 }
 
 .book-meta span {
   background: rgba(214, 168, 79, 0.2);
   color: #7a5516;
-  padding: 6px 10px;
+  padding: 5px 9px;
 }
 
 .book-card h3 {
-  margin: 0 0 6px;
-  font-size: 19px;
+  margin: 0 0 5px;
+  font-size: 17px;
   font-weight: 900;
-  line-height: 1.25;
+  line-height: 1.22;
 }
 
 .author {
-  margin: 0 0 12px;
+  margin: 0 0 9px;
   color: var(--muted);
-  font-size: 14px;
+  font-size: 13.5px;
 }
 
 .description {
-  min-height: 92px;
+  min-height: 72px;
   color: #3b312d;
-  font-size: 14px;
-  line-height: 1.55;
+  font-size: 13.5px;
+  line-height: 1.45;
+  margin-bottom: 10px;
 }
 
 .subject-list {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin: 4px 0 16px;
+  margin: 4px 0 12px;
 }
 
 .subject-list span {
   background: rgba(23, 63, 53, 0.1);
   color: var(--forest);
-  padding: 6px 9px;
+  padding: 5px 8px;
 }
 
 .book-action-form,
 .reading-list-actions {
   margin-top: auto;
+}
+
+.book-action-form {
+  margin-bottom: 0;
 }
 
 .reading-list-actions {
@@ -358,7 +386,10 @@ body {
 
 .action-btn {
   width: 100%;
-  min-height: 42px;
+  min-height: 40px;
+  padding: 9px 12px;
+  font-size: 13px;
+  line-height: 1.2;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -370,19 +401,33 @@ body {
   grid-template-columns: 1fr 1fr;
   gap: 10px;
   margin-top: auto;
+  align-items: stretch;
 }
 
 .reading-card-actions form {
   margin: 0;
+  display: flex;
+}
+
+.reading-card-actions .btn {
+  width: 100%;
+  min-height: 40px;
+  padding: 9px 12px;
+  font-size: 13px;
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
 }
 
 .status-pill {
   width: fit-content;
-  padding: 7px 11px;
+  padding: 6px 10px;
   border-radius: 999px;
   font-weight: 900;
-  font-size: 12px;
-  margin: 4px 0 16px;
+  font-size: 11.5px;
+  margin: 2px 0 12px;
 }
 
 .status-pill.finished {
@@ -396,21 +441,28 @@ body {
 }
 
 .rating-box {
-  margin-top: 14px;
-  padding: 12px 14px;
-  border-radius: 16px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
   background: rgba(214, 168, 79, 0.18);
   color: #7a5516;
   font-weight: 900;
+  font-size: 13px;
 }
 
 .rating-form {
-  margin-top: 14px;
+  margin-top: 12px;
+}
+
+.rating-form .form-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--muted);
 }
 
 /* Form pages */
 .form-panel {
-  padding: 28px;
+  padding: 24px;
 }
 
 .form-control {
@@ -426,7 +478,7 @@ body {
 /* Empty state */
 .empty-state {
   text-align: center;
-  padding: 52px 24px;
+  padding: 44px 24px;
 }
 
 .empty-state h2 {
@@ -436,11 +488,12 @@ body {
 /* See more */
 .see-more-container {
   text-align: center;
-  margin: 34px 0 0;
+  margin: 28px 0 0;
 }
 
 .see-more-button {
-  padding: 12px 24px;
+  padding: 10px 22px;
+  font-size: 14px;
 }
 
 /* Responsive */
@@ -457,7 +510,12 @@ body {
   }
 
   .home-hero {
-    padding: 38px;
+    padding: 34px;
+    min-height: 330px;
+  }
+
+  .hero-panel {
+    padding: 28px;
   }
 }
 
@@ -474,7 +532,16 @@ body {
   .home-hero,
   .hero-panel {
     border-radius: 22px;
-    padding: 28px;
+    padding: 26px;
+  }
+
+  .home-hero {
+    min-height: 300px;
+  }
+
+  .home-hero h1,
+  .hero-panel h1 {
+    font-size: clamp(28px, 10vw, 42px);
   }
 
   .book-grid,
@@ -486,8 +553,12 @@ body {
     display: block;
   }
 
+  .section-subtitle {
+    margin-top: 6px;
+  }
+
   .book-cover {
-    height: 280px;
+    height: 240px;
   }
 
   .reading-list-actions,

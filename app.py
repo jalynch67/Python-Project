@@ -169,6 +169,7 @@ def remove_book():
 @app.route("/finish-book", methods=["POST"])
 def finish_book():
     title = request.form.get("title")
+    book_anchor = request.form.get("book_anchor")
 
     for book in reading_list:
         if book["title"] == title:
@@ -177,7 +178,12 @@ def finish_book():
 
     flash("Book marked as finished.")
 
-    return redirect(url_for("reading_list_page"))
+    redirect_url = url_for("reading_list_page")
+
+    if book_anchor:
+        redirect_url = redirect_url + f"#{book_anchor}"
+
+    return redirect(redirect_url)
 
 
 # Rating system
@@ -185,6 +191,7 @@ def finish_book():
 def rate_book():
     title = request.form.get("title")
     rating = request.form.get("rating")
+    book_anchor = request.form.get("book_anchor")
 
     for book in reading_list:
         if book["title"] == title and book.get("finished"):
@@ -193,8 +200,12 @@ def rate_book():
 
     flash("Rating saved.")
 
-    return redirect(url_for("reading_list_page"))
+    redirect_url = url_for("reading_list_page")
 
+    if book_anchor:
+        redirect_url = redirect_url + f"#{book_anchor}"
+
+    return redirect(redirect_url)
 
 if __name__ == "__main__":
     app.run(debug=True)

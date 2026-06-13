@@ -8,6 +8,14 @@
   </div>
 </section>
 
+{% with messages = get_flashed_messages() %} {% if messages %}
+<div class="flash-messages page-alerts">
+  {% for message in messages %}
+  <div class="alert alert-success" role="alert">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %} {% endwith %}
+
 <section class="form-panel">
   <form method="POST" class="row g-3 align-items-end">
     <div class="col-md-9">

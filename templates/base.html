@@ -37,14 +37,6 @@
       </nav>
     </header>
 
-    <main class="container page-shell">
-      {% with messages = get_flashed_messages() %} {% if messages %}
-      <div class="flash-messages">
-        {% for message in messages %}
-        <div class="alert alert-success mb-2" role="alert">{{ message }}</div>
-        {% endfor %}
-      </div>
-      {% endif %} {% endwith %} {% block content %}{% endblock %}
-    </main>
+    <main class="container page-shell">{% block content %}{% endblock %}</main>
   </body>
 </html>

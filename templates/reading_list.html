@@ -11,7 +11,13 @@
   </div>
 </section>
 
-{% if reading_list %}
+{% with messages = get_flashed_messages() %} {% if messages %}
+<div class="flash-messages page-alerts">
+  {% for message in messages %}
+  <div class="alert alert-success" role="alert">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %} {% endwith %} {% if reading_list %}
 
 <div class="book-grid">
   {% for book in reading_list %}
