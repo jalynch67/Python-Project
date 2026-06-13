@@ -106,6 +106,7 @@ def contact():
 def add_book():
     title = request.form.get("title")
     author = request.form.get("author")
+    book_anchor = request.form.get("book_anchor")
 
     if title and author and not is_book_in_reading_list(title):
         reading_list.append({
@@ -117,13 +118,19 @@ def add_book():
     else:
         flash("This book is already in your reading list.")
 
-    return redirect(request.referrer or url_for("books_page"))
+    redirect_url = request.referrer or url_for("books_page")
+
+    if book_anchor:
+        redirect_url = redirect_url.split("#")[0] + f"#{book_anchor}"
+
+    return redirect(redirect_url)
 
 
 # Remove book from reading list
 @app.route("/remove-book", methods=["POST"])
 def remove_book():
     title = request.form.get("title")
+    book_anchor = request.form.get("book_anchor")
 
     for book in reading_list:
         if book["title"] == title:
@@ -132,7 +139,12 @@ def remove_book():
 
     flash("Book removed from your reading list.")
 
-    return redirect(request.referrer or url_for("reading_list_page"))
+    redirect_url = request.referrer or url_for("reading_list_page")
+
+    if book_anchor:
+        redirect_url = redirect_url.split("#")[0] + f"#{book_anchor}"
+
+    return redirect(redirect_url)
 
 
 # Mark finished

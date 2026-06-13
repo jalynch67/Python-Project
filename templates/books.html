@@ -55,6 +55,12 @@
 
         <form method="POST" action="{{ url_for('remove_book') }}">
           <input type="hidden" name="title" value="{{ book.title }}" />
+          <input
+            type="hidden"
+            name="book_anchor"
+            value="book-{{ loop.index }}"
+          />
+
           <button class="remove-button" type="submit">
             Remove from Reading List
           </button>
@@ -66,6 +72,7 @@
       <form method="POST" action="{{ url_for('add_book') }}">
         <input type="hidden" name="title" value="{{ book.title }}" />
         <input type="hidden" name="author" value="{{ book.author }}" />
+        <input type="hidden" name="book_anchor" value="book-{{ loop.index }}" />
 
         <button type="submit">Add to Reading List</button>
       </form>

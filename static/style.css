@@ -204,7 +204,7 @@ button:hover {
 
 /* Smooth anchor movement when See More jumps to the new book */
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
 /* Responsive layout */
