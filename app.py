@@ -14,6 +14,15 @@ def home():
     return render_template("home.html")
 
 
+# Finds a book in data.py by title
+def find_book_by_title(title):
+    for book in books:
+        if book["title"] == title:
+            return book
+
+    return None
+
+
 # Checks whether a book is already in the user's reading list
 def is_book_in_reading_list(title):
     for book in reading_list:
@@ -74,15 +83,23 @@ def reading_list_page():
 @app.route("/search", methods=["GET", "POST"])
 def search():
     results = []
+    search_term = ""
 
     if request.method == "POST":
         search_term = request.form.get("search", "").lower()
 
         for book in books:
             if search_term in book["title"].lower():
-                results.append(book)
+                results.append({
+                    **book,
+                    "in_reading_list": is_book_in_reading_list(book["title"])
+                })
 
-    return render_template("search.html", results=results)
+    return render_template(
+        "search.html",
+        results=results,
+        search_term=search_term
+    )
 
 
 # Contact form
@@ -96,7 +113,7 @@ def contact():
         if len(name) < 2:
             message = "Name must be at least 2 characters."
         else:
-            message = f"Thank you for your message, {name}!"
+            message = f"Thank you for your request, {name}! We will review your suggestion."
 
     return render_template("contact.html", message=message)
 
@@ -105,16 +122,17 @@ def contact():
 @app.route("/add-book", methods=["POST"])
 def add_book():
     title = request.form.get("title")
-    author = request.form.get("author")
     book_anchor = request.form.get("book_anchor")
 
-    if title and author and not is_book_in_reading_list(title):
+    selected_book = find_book_by_title(title)
+
+    if selected_book and not is_book_in_reading_list(title):
         reading_list.append({
-            "title": title,
-            "author": author
+            **selected_book,
+            "finished": False
         })
 
-        flash("Your book has been added successfully!")
+        flash("Your book has been added to your reading list.")
     else:
         flash("This book is already in your reading list.")
 
@@ -157,7 +175,7 @@ def finish_book():
             book["finished"] = True
             break
 
-    flash("Book marked as finished!")
+    flash("Book marked as finished.")
 
     return redirect(url_for("reading_list_page"))
 
@@ -173,7 +191,7 @@ def rate_book():
             book["rating"] = int(rating)
             break
 
-    flash("Rating saved!")
+    flash("Rating saved.")
 
     return redirect(url_for("reading_list_page"))
 

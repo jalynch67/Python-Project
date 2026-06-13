@@ -1,87 +1,121 @@
-{% extends "base.html" %}
+{% extends "base.html" %} {% block content %}
 
-{% block content %}
-
-<h2>Your Reading List</h2>
-
-<p>Books you have added from Tolkien’s works.</p>
-
-<hr>
-
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    {% for message in messages %}
-      <p>
-        {{ message }}
-      </p>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
+<section class="hero-panel reading-hero">
+  <div>
+    <p class="eyebrow">Your Collection</p>
+    <h1>Your Reading List</h1>
+    <p>
+      Track the fantasy books you want to read, mark them as finished, and leave
+      your own rating.
+    </p>
+  </div>
+</section>
 
 {% if reading_list %}
 
-<ul>
+<div class="book-grid">
+  {% for book in reading_list %}
 
-    {% for book in reading_list %}
+  <div class="book-card reading-card">
+    <div class="cover-wrap">
+      <img
+        class="book-cover"
+        src="{{ book.cover }}"
+        alt="{{ book.title }}"
+        loading="lazy"
+        onerror="
+          this.onerror = null;
+          this.src = 'https://placehold.co/200x300?text=No+Cover';
+        "
+      />
+    </div>
 
-    <li>
+    <div class="book-content">
+      <div class="book-meta">
+        <span>{{ book.type }}</span>
+        <span>{{ book.year }}</span>
+      </div>
 
-        <strong>{{ book.title }}</strong> by {{ book.author }}
+      <h3>{{ book.title }}</h3>
+      <p class="author">by {{ book.author }}</p>
 
-        <br><br>
+      <p class="description">
+        {{ book.description[:165] if book.description else "No description
+        available" }}{% if book.description and book.description|length > 165
+        %}...{% endif %}
+      </p>
 
-        {% if book.finished %}
-            <p>Status: Finished</p>
-        {% else %}
-            <p>Status: Not finished</p>
-        {% endif %}
+      {% if book.subjects %}
+      <div class="subject-list">
+        {% for subject in book.subjects[:3] %}
+        <span>{{ subject }}</span>
+        {% endfor %}
+      </div>
+      {% endif %} {% if book.finished %}
+      <div class="status-pill finished">Finished</div>
+      {% else %}
+      <div class="status-pill not-finished">Not finished</div>
+      {% endif %}
 
-        <form method="POST" action="{{ url_for('remove_book') }}" style="display:inline;">
-            <input type="hidden" name="title" value="{{ book.title }}">
-            <button type="submit">Remove</button>
+      <div class="reading-card-actions">
+        <form method="POST" action="{{ url_for('remove_book') }}">
+          <input type="hidden" name="title" value="{{ book.title }}" />
+          <button class="btn btn-danger w-100" type="submit">Remove</button>
         </form>
 
         {% if not book.finished %}
-        <form method="POST" action="{{ url_for('finish_book') }}" style="display:inline;">
-            <input type="hidden" name="title" value="{{ book.title }}">
-            <button type="submit">Mark as Finished</button>
+        <form method="POST" action="{{ url_for('finish_book') }}">
+          <input type="hidden" name="title" value="{{ book.title }}" />
+          <button class="btn btn-success w-100" type="submit">
+            Mark Finished
+          </button>
         </form>
         {% endif %}
+      </div>
 
-        <br><br>
+      {% if book.finished %} {% if book.rating %}
+      <div class="rating-box">Your Rating: {{ book.rating }}/5</div>
+      {% else %}
+      <form
+        class="rating-form"
+        method="POST"
+        action="{{ url_for('rate_book') }}"
+      >
+        <input type="hidden" name="title" value="{{ book.title }}" />
 
-        {% if book.finished %}
+        <label class="form-label">Rate this book</label>
+        <div class="d-flex gap-2">
+          <input
+            class="form-control"
+            type="number"
+            name="rating"
+            min="1"
+            max="5"
+            required
+          />
 
-            {% if book.rating %}
-                <p>Your Rating: {{ book.rating }}/5</p>
+          <button class="btn btn-primary" type="submit">Save</button>
+        </div>
+      </form>
+      {% endif %} {% endif %}
+    </div>
+  </div>
 
-            {% else %}
-                <form method="POST" action="{{ url_for('rate_book') }}">
-
-                    <input type="hidden" name="title" value="{{ book.title }}">
-
-                    <label>Rate (1–5):</label>
-                    <input type="number" name="rating" min="1" max="5" required>
-
-                    <button type="submit">Submit Rating</button>
-
-                </form>
-            {% endif %}
-
-        {% endif %}
-
-        <hr>
-
-    </li>
-
-    {% endfor %}
-
-</ul>
+  {% endfor %}
+</div>
 
 {% else %}
 
-<p>No books added yet. Go to the Books page to add some.</p>
+<section class="empty-state">
+  <p class="eyebrow">No books yet</p>
+  <h2>Your reading list is empty</h2>
+  <p>
+    Start exploring the catalogue and add a few fantasy books to your personal
+    list.
+  </p>
+  <a class="btn btn-primary" href="{{ url_for('books_page') }}">
+    Browse Books
+  </a>
+</section>
 
-{% endif %}
-
-{% endblock %}
+{% endif %} {% endblock %}

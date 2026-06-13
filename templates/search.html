@@ -1,37 +1,102 @@
-{% extends "base.html" %}
+{% extends "base.html" %} {% block content %}
 
-{% block content %}
+<section class="hero-panel">
+  <div>
+    <p class="eyebrow">Find Your Next Read</p>
+    <h1>Search Books</h1>
+    <p>Search the fantasy catalogue by book title.</p>
+  </div>
+</section>
 
-<h2>Search Books</h2>
+<section class="form-panel">
+  <form method="POST" class="row g-3 align-items-end">
+    <div class="col-md-9">
+      <label class="form-label">Book Title</label>
+      <input
+        class="form-control form-control-lg"
+        type="text"
+        name="search"
+        value="{{ search_term }}"
+        placeholder="Search for The Hobbit, Mistborn, Fourth Wing..."
+      />
+    </div>
 
-<form method="POST">
-
-    <label>Book Title</label>
-
-    <input type="text" name="search">
-
-    <button type="submit">
-        Search
-    </button>
-
-</form>
-
-<hr>
+    <div class="col-md-3">
+      <button class="btn btn-primary btn-lg w-100" type="submit">Search</button>
+    </div>
+  </form>
+</section>
 
 {% if results %}
 
-<h3>Results</h3>
+<div class="section-heading">
+  <div>
+    <p class="eyebrow">Results</p>
+    <h2>Matching Books</h2>
+  </div>
+</div>
 
-<ul>
+<div class="book-grid">
+  {% for book in results %}
+  <div class="book-card">
+    <div class="cover-wrap">
+      <img
+        class="book-cover"
+        src="{{ book.cover }}"
+        alt="{{ book.title }}"
+        loading="lazy"
+        onerror="
+          this.onerror = null;
+          this.src = 'https://placehold.co/200x300?text=No+Cover';
+        "
+      />
+    </div>
 
-    {% for book in results %}
+    <div class="book-content">
+      <div class="book-meta">
+        <span>{{ book.type }}</span>
+        <span>{{ book.year }}</span>
+      </div>
 
-    <li>{{ book.title }}</li>
+      <h3>{{ book.title }}</h3>
+      <p class="author">by {{ book.author }}</p>
 
-    {% endfor %}
+      <p class="description">
+        {{ book.description[:165] if book.description else "No description
+        available" }}{% if book.description and book.description|length > 165
+        %}...{% endif %}
+      </p>
 
-</ul>
+      <form
+        class="book-action-form"
+        method="POST"
+        action="{{ url_for('add_book') }}"
+      >
+        <input type="hidden" name="title" value="{{ book.title }}" />
 
-{% endif %}
+        {% if book.in_reading_list %}
+        <a
+          class="btn btn-success w-100"
+          href="{{ url_for('reading_list_page') }}"
+        >
+          View in Reading List
+        </a>
+        {% else %}
+        <button class="btn btn-primary w-100" type="submit">
+          Add to Reading List
+        </button>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
 
-{% endblock %}
+{% elif search_term %}
+
+<section class="empty-state">
+  <h2>No books found</h2>
+  <p>Try searching for another fantasy title.</p>
+</section>
+
+{% endif %} {% endblock %}

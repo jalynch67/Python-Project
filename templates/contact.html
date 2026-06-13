@@ -1,32 +1,53 @@
-{% extends "base.html" %}
+{% extends "base.html" %} {% block content %}
 
-{% block content %}
+<section class="hero-panel">
+  <div>
+    <p class="eyebrow">Request a Book</p>
+    <h1>Suggest a fantasy title</h1>
+    <p>
+      Tell us which book you would like to see added to the Bookiverse
+      catalogue.
+    </p>
+  </div>
+</section>
 
-<h2>Request a Book</h2>
+<section class="form-panel">
+  <form method="POST" class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label">Your Name</label>
+      <input class="form-control" type="text" name="name" required />
+    </div>
 
-<form method="POST">
+    <div class="col-md-6">
+      <label class="form-label">Email</label>
+      <input class="form-control" type="email" name="email" required />
+    </div>
 
-    <label>Your Name</label><br>
-    <input type="text" name="name" required><br><br>
+    <div class="col-md-6">
+      <label class="form-label">Book Title</label>
+      <input class="form-control" type="text" name="book_title" required />
+    </div>
 
-    <label>Email</label><br>
-    <input type="email" name="email" required><br><br>
+    <div class="col-md-6">
+      <label class="form-label">Author</label>
+      <input class="form-control" type="text" name="author" required />
+    </div>
 
-    <label>Book Title</label><br>
-    <input type="text" name="book_title" required><br><br>
+    <div class="col-12">
+      <label class="form-label">Why should we add this book?</label>
+      <textarea class="form-control" name="reason" rows="5"></textarea>
+    </div>
 
-    <label>Author</label><br>
-    <input type="text" name="author" required><br><br>
+    <div class="col-12">
+      <button class="btn btn-primary btn-lg" type="submit">
+        Submit Request
+      </button>
+    </div>
+  </form>
 
-    <label>Why should we add this book?</label><br>
-    <textarea name="reason"></textarea><br><br>
-
-    <button type="submit">Submit Request</button>
-
-</form>
-
-{% if message %}
-<p>{{ message }}</p>
-{% endif %}
+  {% if message %}
+  <div class="alert alert-success mt-4">{{ message }}</div>
+  {% endif %}
+</section>
 
 {% endblock %}

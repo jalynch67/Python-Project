@@ -1,11 +1,51 @@
-{% extends "base.html" %}
+{% extends "base.html" %} {% block content %}
 
-{% block content %}
+<section class="home-hero">
+  <div class="home-hero-content">
+    <p class="eyebrow">Welcome to Bookiverse</p>
+    <h1>Your fantasy reading companion</h1>
+    <p>
+      Explore a curated library of fantasy books, build your own reading list,
+      mark books as finished, and rate your completed reads.
+    </p>
 
-<h2>Welcome</h2>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="{{ url_for('books_page') }}">
+        Browse Books
+      </a>
+      <a
+        class="btn btn-outline-light"
+        href="{{ url_for('reading_list_page') }}"
+      >
+        View Reading List
+      </a>
+    </div>
+  </div>
+</section>
 
-<p>
-    This website tracks books written by John Ronald Reuel Tolkien.
-</p>
+<section class="feature-grid">
+  <div class="feature-card">
+    <h3>Curated Fantasy Catalogue</h3>
+    <p>
+      Browse legendary series, classic adventures, modern fantasy, and
+      mythology-inspired novels.
+    </p>
+  </div>
+
+  <div class="feature-card">
+    <h3>Build a Reading List</h3>
+    <p>
+      Add books to your personal list and keep track of what you want to read
+      next.
+    </p>
+  </div>
+
+  <div class="feature-card">
+    <h3>Track Progress</h3>
+    <p>
+      Mark books as finished and leave your own rating once you complete them.
+    </p>
+  </div>
+</section>
 
 {% endblock %}
