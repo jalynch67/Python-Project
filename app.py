@@ -1,8 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from data import books
-import requests
-import json
-import os
 
 app = Flask(__name__)
 
@@ -10,126 +7,6 @@ app.secret_key = "mysecretkey"
 
 # Reading List
 reading_list = []
-
-# File used to store book details so API results are saved between app restarts
-CACHE_FILE = "book_cache.json"
-
-
-# Loads saved book details from the cache file if it exists
-def load_book_cache():
-    if os.path.exists(CACHE_FILE):
-        with open(CACHE_FILE, "r") as file:
-            return json.load(file)
-
-    return {}
-
-
-# Saves book details to the cache file
-def save_book_cache():
-    with open(CACHE_FILE, "w") as file:
-        json.dump(book_cache, file, indent=4)
-
-
-# Stores book details fetched from Open Library
-book_cache = load_book_cache()
-
-
-# Fetching book details from Open Library
-def get_book_info(title, author):
-    """
-    Fetch extra book details from Open Library, including the cover image,
-    subjects, and a fuller description where available.
-    Cache results to improve performance and avoid repeated API calls.
-    """
-
-    cache_key = f"{title}-{author}"
-
-    # Return saved book details if this book has already been fetched
-    if cache_key in book_cache:
-        return book_cache[cache_key]
-
-    fallback = {
-        "cover": "https://placehold.co/200x300?text=No+Cover",
-        "description": "No description available.",
-        "subjects": []
-    }
-
-    search_url = "https://openlibrary.org/search.json"
-
-    params = {
-        "title": title,
-        "author": author,
-        "limit": 1
-    }
-
-    try:
-        search_response = requests.get(search_url, params=params, timeout=10)
-        search_response.raise_for_status()
-
-        search_data = search_response.json()
-        docs = search_data.get("docs", [])
-
-        if not docs:
-            book_cache[cache_key] = fallback
-            save_book_cache()
-            return fallback
-
-        book_data = docs[0]
-
-        cover_id = book_data.get("cover_i")
-
-        if cover_id:
-            cover_url = f"https://covers.openlibrary.org/b/id/{cover_id}-M.jpg"
-        else:
-            cover_url = fallback["cover"]
-
-        subjects = book_data.get("subject", [])[:3]
-
-        description = "No description available."
-
-        # Open Library search results often include a work key.
-        # We use this to make a second request for a better description.
-        work_key = book_data.get("key")
-
-        if work_key:
-            work_url = f"https://openlibrary.org{work_key}.json"
-
-            work_response = requests.get(work_url, timeout=10)
-            work_response.raise_for_status()
-
-            work_data = work_response.json()
-
-            work_description = work_data.get("description")
-
-            if isinstance(work_description, dict):
-                description = work_description.get("value", "No description available.")
-            elif isinstance(work_description, str):
-                description = work_description
-
-        # If no full description was found, use subjects as a better fallback
-        if description == "No description available.":
-            if subjects:
-                description = "Themes include " + ", ".join(subjects).lower() + "."
-            elif book_data.get("first_publish_year"):
-                description = f"First published in {book_data.get('first_publish_year')}."
-
-        book_info = {
-            "cover": cover_url,
-            "description": description,
-            "subjects": subjects
-        }
-
-        # Save the fetched book details so future page loads are faster
-        book_cache[cache_key] = book_info
-        save_book_cache()
-
-        return book_info
-
-    except Exception as error:
-        print(f"Open Library error for {title}: {error}")
-
-        # Do not save fallback here, so temporary API errors are not cached permanently
-        return fallback
 
 
 @app.route("/")
@@ -155,22 +32,16 @@ def books_page():
     # Prevent the limit from going below 8 or above the total number of books
     limit = max(8, min(limit, len(books)))
 
-    # Only fetch details for the books we are actually showing
+    # Only show the books needed for the current page
     visible_books = books[:limit]
 
     enriched_books = []
 
     for book in visible_books:
-        extra = get_book_info(
-            book["title"],
-            book["author"]
-        )
-
         enriched_book = {
-    **book,
-    **extra,
-    "in_reading_list": is_book_in_reading_list(book["title"])
-}
+            **book,
+            "in_reading_list": is_book_in_reading_list(book["title"])
+        }
 
         enriched_books.append(enriched_book)
 
