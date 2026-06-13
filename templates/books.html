@@ -1,0 +1,43 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="book-grid">
+  {% for book in books %}
+
+  <div class="book-card">
+    <img
+      class="book-cover"
+      src="{{ book.cover }}"
+      alt="{{ book.title }}"
+      loading="lazy"
+      onerror="
+        this.onerror = null;
+        this.src = 'https://placehold.co/200x300?text=No+Cover';
+      "
+    />
+
+    <p style="font-size: 12px; word-break: break-all">{{ book.cover }}</p>
+
+    <h3>{{ book.title }}</h3>
+
+    <p class="author">{{ book.author }}</p>
+
+    <div class="rating">⭐ {{ book.rating }} ({{ book.ratings_count }})</div>
+
+    <p class="description">
+      {{ book.description[:150] if book.description else "No description
+      available" }}...
+    </p>
+
+    <form method="POST" action="{{ url_for('add_book') }}">
+      <input type="hidden" name="title" value="{{ book.title }}" />
+
+      <input type="hidden" name="author" value="{{ book.author }}" />
+
+      <button type="submit">Add to Reading List</button>
+    </form>
+  </div>
+
+  {% endfor %}
+</div>
+
+{% endblock %}

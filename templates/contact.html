@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Request a Book</h2>
+
+<form method="POST">
+
+    <label>Your Name</label><br>
+    <input type="text" name="name" required><br><br>
+
+    <label>Email</label><br>
+    <input type="email" name="email" required><br><br>
+
+    <label>Book Title</label><br>
+    <input type="text" name="book_title" required><br><br>
+
+    <label>Author</label><br>
+    <input type="text" name="author" required><br><br>
+
+    <label>Why should we add this book?</label><br>
+    <textarea name="reason"></textarea><br><br>
+
+    <button type="submit">Submit Request</button>
+
+</form>
+
+{% if message %}
+<p>{{ message }}</p>
+{% endif %}
+
+{% endblock %}
