@@ -87,10 +87,18 @@ def home():
 # Available Books List
 @app.route("/books")
 def books_page():
+    # Get the current limit from the URL
+    limit = request.args.get("limit", default=8, type=int)
+    
+    # Prevent the limit from going below 8 or above the total number of books
+    limit = max(8, min(limit, len(books)))
+
+    # Only fetch details for the books we are actually showing
+    visible_books = books[:limit]
 
     enriched_books = []
 
-    for book in books[:20]:
+    for book in visible_books:
         extra = get_book_info(
             book["title"],
             book["author"]
@@ -103,9 +111,16 @@ def books_page():
 
         enriched_books.append(enriched_book)
 
+    next_limit = limit + 8
+
+    has_more_books = limit < len(books)
+
     return render_template(
         "books.html",
-        books=enriched_books
+        books=enriched_books,
+        limit=limit,
+        next_limit=next_limit,
+        has_more_books=has_more_books
     )
 
 
