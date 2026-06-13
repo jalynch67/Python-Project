@@ -53,31 +53,52 @@ def is_book_in_reading_list(title):
 # Available Books List
 @app.route("/books")
 def books_page():
+    # Get selected category from the URL
+    selected_category = request.args.get("category", "All")
+
     # Get the current limit from the URL
     limit = request.args.get("limit", default=8, type=int)
 
-    # Prevent the limit from going below 8 or above the total number of books
-    limit = max(8, min(limit, len(books)))
+    # Create category filter options from data.py
+    category_options = sorted(
+        set(book.get("category", "Uncategorised") for book in books)
+    )
+
+    # Start with all books
+    filtered_books = books
+
+    # Filter by category if one has been selected
+    if selected_category != "All":
+        filtered_books = [
+            book for book in books
+            if book.get("category", "Uncategorised") == selected_category
+        ]
+
+    # Prevent the limit from going below 8 or above the filtered book total
+    if filtered_books:
+        limit = max(8, min(limit, len(filtered_books)))
+    else:
+        limit = 8
 
     # Only show the books needed for the current page
-    visible_books = books[:limit]
+    visible_books = filtered_books[:limit]
 
     enriched_books = []
 
     for book in visible_books:
         enriched_book = {
-    **book,
-    "slug": create_slug(book["title"]),
-    "in_reading_list": is_book_in_reading_list(book["title"])
-}
+            **book,
+            "slug": create_slug(book["title"]),
+            "in_reading_list": is_book_in_reading_list(book["title"])
+        }
 
         enriched_books.append(enriched_book)
 
-    # Increase the number of books shown by 8, but do not go past the total
-    next_limit = min(limit + 8, len(books))
+    # Increase the number of books shown by 8, but do not go past the filtered total
+    next_limit = min(limit + 8, len(filtered_books))
 
-    # Check if there are more books available to show
-    has_more_books = limit < len(books)
+    # Check if there are more filtered books available to show
+    has_more_books = limit < len(filtered_books)
 
     # Used by the See More button to scroll to the first newly loaded book
     next_anchor = limit + 1
@@ -88,7 +109,10 @@ def books_page():
         limit=limit,
         next_limit=next_limit,
         has_more_books=has_more_books,
-        next_anchor=next_anchor
+        next_anchor=next_anchor,
+        selected_category=selected_category,
+        category_options=category_options,
+        result_count=len(filtered_books)
     )
 
 
@@ -102,6 +126,7 @@ def book_detail(slug):
 
     book = {
         **book,
+        "slug": create_slug(book["title"]),
         "in_reading_list": is_book_in_reading_list(book["title"])
     }
 
@@ -124,9 +149,22 @@ def search():
         search_term = request.form.get("search", "").lower()
 
         for book in books:
-            if search_term in book["title"].lower():
+            title = book.get("title", "").lower()
+            author = book.get("author", "").lower()
+            description = book.get("description", "").lower()
+            subjects = " ".join(book.get("subjects", [])).lower()
+            category = book.get("category", "").lower()
+
+            if (
+                search_term in title
+                or search_term in author
+                or search_term in description
+                or search_term in subjects
+                or search_term in category
+            ):
                 results.append({
                     **book,
+                    "slug": create_slug(book["title"]),
                     "in_reading_list": is_book_in_reading_list(book["title"])
                 })
 
@@ -158,12 +196,14 @@ def contact():
 def add_book():
     title = request.form.get("title")
     book_anchor = request.form.get("book_anchor")
+    current_limit = request.form.get("current_limit", default=8, type=int)
 
     selected_book = find_book_by_title(title)
 
     if selected_book and not is_book_in_reading_list(title):
         reading_list.append({
             **selected_book,
+            "slug": create_slug(selected_book["title"]),
             "finished": False
         })
 
@@ -171,7 +211,7 @@ def add_book():
     else:
         flash("This book is already in your reading list.")
 
-    redirect_url = request.referrer or url_for("books_page")
+    redirect_url = request.referrer or url_for("books_page", limit=current_limit)
 
     if book_anchor:
         redirect_url = redirect_url.split("#")[0] + f"#{book_anchor}"
@@ -241,6 +281,7 @@ def rate_book():
         redirect_url = redirect_url + f"#{book_anchor}"
 
     return redirect(redirect_url)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -19,6 +19,47 @@
 </div>
 {% endif %} {% endwith %}
 
+<section class="filter-panel">
+  <form
+    method="GET"
+    action="{{ url_for('books_page') }}"
+    class="row g-3 align-items-end"
+  >
+    <div class="col-md-6">
+      <label class="form-label">Filter by Category</label>
+
+      <select class="form-select" name="category">
+        {% if selected_category == "All" %}
+        <option value="All" selected>All Categories</option>
+        {% else %}
+        <option value="All">All Categories</option>
+        {% endif %} {% for category in category_options %} {% if
+        selected_category == category %}
+        <option value="{{ category }}" selected>{{ category }}</option>
+        {% else %}
+        <option value="{{ category }}">{{ category }}</option>
+        {% endif %} {% endfor %}
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <button class="btn btn-primary w-100" type="submit">Apply Filter</button>
+    </div>
+
+    <div class="col-md-3">
+      <a class="btn btn-outline-dark w-100" href="{{ url_for('books_page') }}">
+        Clear Filter
+      </a>
+    </div>
+
+    <div class="col-12">
+      <p class="filter-summary">
+        Showing {{ books|length }} of {{ result_count }} matching books.
+      </p>
+    </div>
+  </form>
+</section>
+
 <div class="section-heading">
   <div>
     <p class="eyebrow">Book Catalogue</p>
@@ -29,6 +70,8 @@
     Browse curated fantasy novels, mythology, classics, and modern bestsellers.
   </p>
 </div>
+
+{% if books %}
 
 <div class="book-grid">
   {% for book in books %}
@@ -52,6 +95,7 @@
 
     <div class="book-content">
       <div class="book-meta">
+        <span>{{ book.category if book.category else "Uncategorised" }}</span>
         <span>{{ book.type }}</span>
         <span>{{ book.year }}</span>
       </div>
@@ -131,11 +175,23 @@
   {% endfor %}
 </div>
 
-{% if has_more_books %}
+{% else %}
+
+<section class="empty-state">
+  <p class="eyebrow">No results</p>
+  <h2>No books match that filter</h2>
+  <p>Try changing or clearing the selected category filter.</p>
+
+  <a class="btn btn-primary" href="{{ url_for('books_page') }}">
+    Clear Filter
+  </a>
+</section>
+
+{% endif %} {% if has_more_books %}
 <div class="see-more-container">
   <a
     class="btn btn-dark see-more-button"
-    href="{{ url_for('books_page', limit=next_limit) }}#book-{{ next_anchor }}"
+    href="{{ url_for('books_page', limit=next_limit, category=selected_category) }}#book-{{ next_anchor }}"
   >
     See More Books
   </a>
