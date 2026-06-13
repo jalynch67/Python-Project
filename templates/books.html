@@ -5,7 +5,7 @@
 <div class="book-grid">
   {% for book in books %}
 
-  <div class="book-card">
+  <div class="book-card" id="book-{{ loop.index }}">
     <img
       class="book-cover"
       src="{{ book.cover }}"
@@ -44,7 +44,7 @@
 <div class="see-more-container">
   <a
     class="see-more-button"
-    href="{{ url_for('books_page', limit=next_limit) }}"
+    href="{{ url_for('books_page', limit=next_limit) }}#book-{{ next_anchor }}"
   >
     See More Books
   </a>

@@ -89,7 +89,7 @@ def home():
 def books_page():
     # Get the current limit from the URL
     limit = request.args.get("limit", default=8, type=int)
-    
+
     # Prevent the limit from going below 8 or above the total number of books
     limit = max(8, min(limit, len(books)))
 
@@ -111,16 +111,22 @@ def books_page():
 
         enriched_books.append(enriched_book)
 
-    next_limit = limit + 8
+    # Increase the number of books shown by 8, but do not go past the total
+    next_limit = min(limit + 8, len(books))
 
+    # Check if there are more books available to show
     has_more_books = limit < len(books)
+
+    # Used by the See More button to scroll to the first newly loaded book
+    next_anchor = limit + 1
 
     return render_template(
         "books.html",
         books=enriched_books,
         limit=limit,
         next_limit=next_limit,
-        has_more_books=has_more_books
+        has_more_books=has_more_books,
+        next_anchor=next_anchor
     )
 
 
