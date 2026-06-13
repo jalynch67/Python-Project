@@ -97,7 +97,7 @@ body {
 
 .reading-card,
 .rating-area {
-  scroll-margin-top: 24px;
+  scroll-margin-top: 120px;
 }
 
 /* Hero sections */
@@ -565,5 +565,112 @@ body {
   .reading-card-actions {
     grid-template-columns: 1fr;
     flex-direction: column;
+  }
+
+  .book-detail-link {
+    display: block;
+    text-decoration: none;
+  }
+
+  .book-title-link {
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .book-title-link:hover {
+    color: var(--forest);
+    text-decoration: underline;
+  }
+
+  .book-detail-hero {
+    display: grid;
+    grid-template-columns: 360px minmax(0, 1fr);
+    gap: 34px;
+    padding: 34px;
+    border-radius: 24px;
+    background: rgba(255, 250, 242, 0.96);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+
+  .book-detail-cover {
+    background: linear-gradient(180deg, #efe0c9, #fff8eb);
+    border-radius: 22px;
+    padding: 18px;
+  }
+
+  .book-detail-cover img {
+    width: 100%;
+    max-height: 520px;
+    object-fit: contain;
+    border-radius: 18px;
+    background: #eadcc8;
+    padding: 8px;
+  }
+
+  .book-detail-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .book-detail-content h1 {
+    margin: 0 0 8px;
+    font-size: clamp(34px, 5vw, 58px);
+    font-weight: 900;
+    letter-spacing: -1.5px;
+  }
+
+  .book-detail-author {
+    color: var(--muted);
+    font-size: 18px;
+    margin-bottom: 14px;
+  }
+
+  .detail-meta {
+    margin-bottom: 14px;
+  }
+
+  .detail-subjects {
+    margin-bottom: 18px;
+  }
+
+  .book-detail-description {
+    color: #3b312d;
+    font-size: 16px;
+    line-height: 1.7;
+    max-width: 850px;
+  }
+
+  .detail-actions {
+    max-width: 460px;
+    margin-top: 18px;
+  }
+
+  .detail-add-form {
+    max-width: 320px;
+    margin-top: 18px;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: var(--forest);
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 850px) {
+    .book-detail-hero {
+      grid-template-columns: 1fr;
+    }
+
+    .book-detail-cover {
+      max-width: 360px;
+    }
   }
 }

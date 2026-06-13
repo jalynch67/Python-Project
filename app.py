@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from data import books
+import re
 
 app = Flask(__name__)
 
@@ -18,6 +19,23 @@ def home():
 def find_book_by_title(title):
     for book in books:
         if book["title"] == title:
+            return book
+
+    return None
+
+
+# Creates a URL-friendly version of a book title
+def create_slug(title):
+    slug = title.lower()
+    slug = re.sub(r"[^a-z0-9]+", "-", slug)
+    slug = slug.strip("-")
+    return slug
+
+
+# Finds a book in data.py by its URL slug
+def find_book_by_slug(slug):
+    for book in books:
+        if create_slug(book["title"]) == slug:
             return book
 
     return None
@@ -48,9 +66,10 @@ def books_page():
 
     for book in visible_books:
         enriched_book = {
-            **book,
-            "in_reading_list": is_book_in_reading_list(book["title"])
-        }
+    **book,
+    "slug": create_slug(book["title"]),
+    "in_reading_list": is_book_in_reading_list(book["title"])
+}
 
         enriched_books.append(enriched_book)
 
@@ -71,6 +90,22 @@ def books_page():
         has_more_books=has_more_books,
         next_anchor=next_anchor
     )
+
+
+# Individual book detail page
+@app.route("/books/<slug>")
+def book_detail(slug):
+    book = find_book_by_slug(slug)
+
+    if book is None:
+        return redirect(url_for("books_page"))
+
+    book = {
+        **book,
+        "in_reading_list": is_book_in_reading_list(book["title"])
+    }
+
+    return render_template("book_detail.html", book=book)
 
 
 # User Reading List

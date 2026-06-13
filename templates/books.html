@@ -24,6 +24,7 @@
     <p class="eyebrow">Book Catalogue</p>
     <h2>Available Books</h2>
   </div>
+
   <p class="section-subtitle">
     Browse curated fantasy novels, mythology, classics, and modern bestsellers.
   </p>
@@ -33,7 +34,10 @@
   {% for book in books %}
 
   <div class="book-card" id="book-{{ loop.index }}">
-    <div class="cover-wrap">
+    <a
+      class="book-detail-link cover-wrap"
+      href="{{ url_for('book_detail', slug=book.slug) }}"
+    >
       <img
         class="book-cover"
         src="{{ book.cover }}"
@@ -44,7 +48,7 @@
           this.src = 'https://placehold.co/200x300?text=No+Cover';
         "
       />
-    </div>
+    </a>
 
     <div class="book-content">
       <div class="book-meta">
@@ -52,7 +56,14 @@
         <span>{{ book.year }}</span>
       </div>
 
-      <h3>{{ book.title }}</h3>
+      <h3>
+        <a
+          class="book-title-link"
+          href="{{ url_for('book_detail', slug=book.slug) }}"
+        >
+          {{ book.title }}
+        </a>
+      </h3>
 
       <p class="author">by {{ book.author }}</p>
 
@@ -89,6 +100,7 @@
             name="book_anchor"
             value="book-{{ loop.index }}"
           />
+          <input type="hidden" name="current_limit" value="{{ limit }}" />
 
           <button class="btn btn-danger action-btn" type="submit">
             Remove
@@ -105,6 +117,7 @@
       >
         <input type="hidden" name="title" value="{{ book.title }}" />
         <input type="hidden" name="book_anchor" value="book-{{ loop.index }}" />
+        <input type="hidden" name="current_limit" value="{{ limit }}" />
 
         <button class="btn btn-primary action-btn w-100" type="submit">
           Add to Reading List

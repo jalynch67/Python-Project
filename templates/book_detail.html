@@ -1,0 +1,85 @@
+{% extends "base.html" %} {% block content %}
+
+<section class="book-detail-hero">
+  <div class="book-detail-cover">
+    <img
+      src="{{ book.cover }}"
+      alt="{{ book.title }}"
+      onerror="
+        this.onerror = null;
+        this.src = 'https://placehold.co/200x300?text=No+Cover';
+      "
+    />
+  </div>
+
+  <div class="book-detail-content">
+    <p class="eyebrow">Book Details</p>
+
+    <h1>{{ book.title }}</h1>
+
+    <p class="book-detail-author">by {{ book.author }}</p>
+
+    <div class="book-meta detail-meta">
+      <span>{{ book.type }}</span>
+      <span>{{ book.year }}</span>
+    </div>
+
+    {% if book.subjects %}
+    <div class="subject-list detail-subjects">
+      {% for subject in book.subjects[:5] %}
+      <span>{{ subject }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <p class="book-detail-description">
+      {{ book.description if book.description else "No description available."
+      }}
+    </p>
+
+    {% if book.in_reading_list %}
+
+    <div class="reading-list-actions detail-actions">
+      <a
+        class="btn btn-success action-btn"
+        href="{{ url_for('reading_list_page') }}"
+      >
+        View in Reading List
+      </a>
+
+      <form
+        class="remove-reading-list-form"
+        method="POST"
+        action="{{ url_for('remove_book') }}"
+      >
+        <input type="hidden" name="title" value="{{ book.title }}" />
+
+        <button class="btn btn-danger action-btn" type="submit">
+          Remove from List
+        </button>
+      </form>
+    </div>
+
+    {% else %}
+
+    <form
+      class="book-action-form detail-add-form"
+      method="POST"
+      action="{{ url_for('add_book') }}"
+    >
+      <input type="hidden" name="title" value="{{ book.title }}" />
+
+      <button class="btn btn-primary action-btn" type="submit">
+        Add to Reading List
+      </button>
+    </form>
+
+    {% endif %}
+
+    <a class="back-link" href="{{ url_for('books_page') }}">
+      ← Back to Books
+    </a>
+  </div>
+</section>
+
+{% endblock %}

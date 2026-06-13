@@ -22,7 +22,7 @@
 <div class="book-grid">
   {% for book in reading_list %}
 
-  <div class="book-card reading-card">
+  <div class="book-card reading-card" id="reading-book-{{ loop.index }}">
     <div class="cover-wrap">
       <img
         class="book-cover"
@@ -66,12 +66,24 @@
       <div class="reading-card-actions">
         <form method="POST" action="{{ url_for('remove_book') }}">
           <input type="hidden" name="title" value="{{ book.title }}" />
+          <input
+            type="hidden"
+            name="book_anchor"
+            value="reading-book-{{ loop.index }}"
+          />
+
           <button class="btn btn-danger w-100" type="submit">Remove</button>
         </form>
 
         {% if not book.finished %}
         <form method="POST" action="{{ url_for('finish_book') }}">
           <input type="hidden" name="title" value="{{ book.title }}" />
+          <input
+            type="hidden"
+            name="book_anchor"
+            value="rating-book-{{ loop.index }}"
+          />
+
           <button class="btn btn-success w-100" type="submit">
             Mark Finished
           </button>
@@ -79,31 +91,41 @@
         {% endif %}
       </div>
 
-      {% if book.finished %} {% if book.rating %}
-      <div class="rating-box">Your Rating: {{ book.rating }}/5</div>
-      {% else %}
-      <form
-        class="rating-form"
-        method="POST"
-        action="{{ url_for('rate_book') }}"
-      >
-        <input type="hidden" name="title" value="{{ book.title }}" />
-
-        <label class="form-label">Rate this book</label>
-        <div class="d-flex gap-2">
+      {% if book.finished %}
+      <div id="rating-book-{{ loop.index }}" class="rating-area">
+        {% if book.rating %}
+        <div class="rating-box">Your Rating: {{ book.rating }}/5</div>
+        {% else %}
+        <form
+          class="rating-form"
+          method="POST"
+          action="{{ url_for('rate_book') }}"
+        >
+          <input type="hidden" name="title" value="{{ book.title }}" />
           <input
-            class="form-control"
-            type="number"
-            name="rating"
-            min="1"
-            max="5"
-            required
+            type="hidden"
+            name="book_anchor"
+            value="rating-book-{{ loop.index }}"
           />
 
-          <button class="btn btn-primary" type="submit">Save</button>
-        </div>
-      </form>
-      {% endif %} {% endif %}
+          <label class="form-label">Rate this book</label>
+
+          <div class="d-flex gap-2">
+            <input
+              class="form-control"
+              type="number"
+              name="rating"
+              min="1"
+              max="5"
+              required
+            />
+
+            <button class="btn btn-primary" type="submit">Save</button>
+          </div>
+        </form>
+        {% endif %}
+      </div>
+      {% endif %}
     </div>
   </div>
 
@@ -119,6 +141,7 @@
     Start exploring the catalogue and add a few fantasy books to your personal
     list.
   </p>
+
   <a class="btn btn-primary" href="{{ url_for('books_page') }}">
     Browse Books
   </a>
