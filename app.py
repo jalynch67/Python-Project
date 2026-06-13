@@ -14,9 +14,9 @@ app.secret_key = "mysecretkey"
 
 reading_list = []
 
-# Cache Google Books results so each book is only fetched once
 book_cache = {}
 
+# Fetching book details from open library
 def get_book_info(title, author):
     cache_key = f"{title}-{author}"
 
