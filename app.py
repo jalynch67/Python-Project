@@ -137,6 +137,15 @@ def home():
     return render_template("home.html")
 
 
+# Checks whether a book is already in the user's reading list
+def is_book_in_reading_list(title):
+    for book in reading_list:
+        if book["title"] == title:
+            return True
+
+    return False
+
+
 # Available Books List
 @app.route("/books")
 def books_page():
@@ -158,9 +167,10 @@ def books_page():
         )
 
         enriched_book = {
-            **book,
-            **extra
-        }
+    **book,
+    **extra,
+    "in_reading_list": is_book_in_reading_list(book["title"])
+}
 
         enriched_books.append(enriched_book)
 
@@ -226,15 +236,17 @@ def add_book():
     title = request.form.get("title")
     author = request.form.get("author")
 
-    if title and author:
+    if title and author and not is_book_in_reading_list(title):
         reading_list.append({
             "title": title,
             "author": author
         })
 
-    flash("Your book has been added successfully!")
+        flash("Your book has been added successfully!")
+    else:
+        flash("This book is already in your reading list.")
 
-    return redirect(url_for("books_page"))
+    return redirect(request.referrer or url_for("books_page"))
 
 
 # Remove book from reading list
@@ -249,7 +261,7 @@ def remove_book():
 
     flash("Book removed from your reading list.")
 
-    return redirect(url_for("reading_list_page"))
+    return redirect(request.referrer or url_for("reading_list_page"))
 
 
 # Mark finished

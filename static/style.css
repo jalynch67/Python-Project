@@ -245,4 +245,36 @@ html {
     display: inline-block;
     margin-bottom: 8px;
   }
+
+  .reading-list-actions {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .view-reading-list-button {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    background: #333;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+  }
+
+  .view-reading-list-button:hover {
+    background: #555;
+  }
+
+  .remove-button {
+    background: #d9534f;
+  }
+
+  .remove-button:hover {
+    background: #c9302c;
+  }
 }

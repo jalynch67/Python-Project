@@ -43,7 +43,25 @@
         <span>{{ subject }}</span>
         {% endfor %}
       </div>
-      {% endif %}
+      {% endif %} {% if book.in_reading_list %}
+
+      <div class="reading-list-actions">
+        <a
+          class="view-reading-list-button"
+          href="{{ url_for('reading_list_page') }}"
+        >
+          View in Reading List
+        </a>
+
+        <form method="POST" action="{{ url_for('remove_book') }}">
+          <input type="hidden" name="title" value="{{ book.title }}" />
+          <button class="remove-button" type="submit">
+            Remove from Reading List
+          </button>
+        </form>
+      </div>
+
+      {% else %}
 
       <form method="POST" action="{{ url_for('add_book') }}">
         <input type="hidden" name="title" value="{{ book.title }}" />
@@ -51,6 +69,8 @@
 
         <button type="submit">Add to Reading List</button>
       </form>
+
+      {% endif %}
     </div>
   </div>
 
