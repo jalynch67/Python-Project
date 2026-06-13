@@ -53,7 +53,11 @@
           View in Reading List
         </a>
 
-        <form method="POST" action="{{ url_for('remove_book') }}">
+        <form
+          class="remove-reading-list-form"
+          method="POST"
+          action="{{ url_for('remove_book') }}"
+        >
           <input type="hidden" name="title" value="{{ book.title }}" />
           <input
             type="hidden"

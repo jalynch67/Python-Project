@@ -161,7 +161,7 @@ button:hover {
   line-height: 1.4;
 }
 
-/* Subject/tag list from Open Library */
+/* Subject/tag list */
 .subject-list {
   display: flex;
   flex-wrap: wrap;
@@ -177,9 +177,66 @@ button:hover {
   font-size: 12px;
 }
 
-/* Keeps Add to Reading List button aligned near bottom of card */
-.book-card form {
+/* Keeps normal Add to Reading List form aligned near bottom of card */
+.book-content > form {
   margin-top: auto;
+}
+
+/* Reading list action buttons on book cards */
+.reading-list-actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  width: 100%;
+  align-items: stretch;
+}
+
+/* Stops the remove form inheriting the global form margin */
+.reading-list-actions form {
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+/* Green View in Reading List button */
+.view-reading-list-button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 42px;
+  padding: 10px;
+  background: #4caf50;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.view-reading-list-button:hover {
+  background: #3f9742;
+}
+
+/* Red Remove from Reading List button */
+.remove-button {
+  width: 100%;
+  min-height: 42px;
+  margin: 0;
+  padding: 10px;
+  background: #d9534f;
+  color: white;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.remove-button:hover {
+  background: #c9302c;
 }
 
 /* See More button */
@@ -202,7 +259,7 @@ button:hover {
   background: #555;
 }
 
-/* Smooth anchor movement when See More jumps to the new book */
+/* Stops anchor links visibly scrolling from the top */
 html {
   scroll-behavior: auto;
 }
@@ -247,34 +304,6 @@ html {
   }
 
   .reading-list-actions {
-    margin-top: auto;
-    display: flex;
     flex-direction: column;
-    gap: 10px;
-  }
-
-  .view-reading-list-button {
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 10px;
-    background: #333;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: bold;
-  }
-
-  .view-reading-list-button:hover {
-    background: #555;
-  }
-
-  .remove-button {
-    background: #d9534f;
-  }
-
-  .remove-button:hover {
-    background: #c9302c;
   }
 }
