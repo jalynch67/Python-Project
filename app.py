@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from data import books
 import requests
+import json
+import os
 
 app = Flask(__name__)
 
@@ -9,17 +11,39 @@ app.secret_key = "mysecretkey"
 # Reading List
 reading_list = []
 
-app = Flask(__name__)
-app.secret_key = "mysecretkey"
+# File used to store book details so API results are saved between app restarts
+CACHE_FILE = "book_cache.json"
 
-reading_list = []
 
-book_cache = {}
+# Loads saved book details from the cache file if it exists
+def load_book_cache():
+    if os.path.exists(CACHE_FILE):
+        with open(CACHE_FILE, "r") as file:
+            return json.load(file)
 
-# Fetching book details from open library
+    return {}
+
+
+# Saves book details to the cache file
+def save_book_cache():
+    with open(CACHE_FILE, "w") as file:
+        json.dump(book_cache, file, indent=4)
+
+
+# Stores book details fetched from Open Library
+book_cache = load_book_cache()
+
+
+# Fetching book details from Open Library
 def get_book_info(title, author):
+    """
+    Fetch extra book details from Open Library, including the cover image.
+    Cache results to improve performance and avoid repeated API calls.
+    """
+
     cache_key = f"{title}-{author}"
 
+    # Return saved book details if this book has already been fetched
     if cache_key in book_cache:
         return book_cache[cache_key]
 
@@ -47,6 +71,7 @@ def get_book_info(title, author):
 
         if not docs:
             book_cache[cache_key] = fallback
+            save_book_cache()
             return fallback
 
         book_data = docs[0]
@@ -54,7 +79,8 @@ def get_book_info(title, author):
         cover_id = book_data.get("cover_i")
 
         if cover_id:
-            cover_url = f"https://covers.openlibrary.org/b/id/{cover_id}-L.jpg"
+            # M uses medium-sized covers, which load faster than large covers
+            cover_url = f"https://covers.openlibrary.org/b/id/{cover_id}-M.jpg"
         else:
             cover_url = fallback["cover"]
 
@@ -71,13 +97,18 @@ def get_book_info(title, author):
             "ratings_count": 0
         }
 
+        # Save the fetched book details so future page loads are faster
         book_cache[cache_key] = book_info
+        save_book_cache()
+
         return book_info
 
     except Exception as error:
         print(f"Open Library error for {title}: {error}")
-        book_cache[cache_key] = fallback
+
+        # Do not save fallback here, so temporary API errors are not cached permanently
         return fallback
+
 
 @app.route("/")
 def home():
@@ -139,7 +170,6 @@ def reading_list_page():
 # Book Search
 @app.route("/search", methods=["GET", "POST"])
 def search():
-
     results = []
 
     if request.method == "POST":
@@ -155,11 +185,9 @@ def search():
 # Contact form
 @app.route("/contact", methods=["GET", "POST"])
 def contact():
-
     message = ""
 
     if request.method == "POST":
-
         name = request.form.get("name", "")
 
         if len(name) < 2:
@@ -173,12 +201,10 @@ def contact():
 # Add book to reading list
 @app.route("/add-book", methods=["POST"])
 def add_book():
-
     title = request.form.get("title")
     author = request.form.get("author")
 
     if title and author:
-
         reading_list.append({
             "title": title,
             "author": author
@@ -192,7 +218,6 @@ def add_book():
 # Remove book from reading list
 @app.route("/remove-book", methods=["POST"])
 def remove_book():
-
     title = request.form.get("title")
 
     for book in reading_list:
@@ -208,7 +233,6 @@ def remove_book():
 # Mark finished
 @app.route("/finish-book", methods=["POST"])
 def finish_book():
-
     title = request.form.get("title")
 
     for book in reading_list:
@@ -224,12 +248,11 @@ def finish_book():
 # Rating system
 @app.route("/rate-book", methods=["POST"])
 def rate_book():
-
     title = request.form.get("title")
     rating = request.form.get("rating")
 
     for book in reading_list:
-        if book["title"] == title and book["finished"]:
+        if book["title"] == title and book.get("finished"):
             book["rating"] = int(rating)
             break
 
