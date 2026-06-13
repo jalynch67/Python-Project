@@ -37,7 +37,8 @@ book_cache = load_book_cache()
 # Fetching book details from Open Library
 def get_book_info(title, author):
     """
-    Fetch extra book details from Open Library, including the cover image.
+    Fetch extra book details from Open Library, including the cover image,
+    subjects, and a fuller description where available.
     Cache results to improve performance and avoid repeated API calls.
     """
 
@@ -50,11 +51,10 @@ def get_book_info(title, author):
     fallback = {
         "cover": "https://placehold.co/200x300?text=No+Cover",
         "description": "No description available.",
-        "rating": "N/A",
-        "ratings_count": 0
+        "subjects": []
     }
 
-    url = "https://openlibrary.org/search.json"
+    search_url = "https://openlibrary.org/search.json"
 
     params = {
         "title": title,
@@ -63,11 +63,11 @@ def get_book_info(title, author):
     }
 
     try:
-        response = requests.get(url, params=params, timeout=10)
-        response.raise_for_status()
+        search_response = requests.get(search_url, params=params, timeout=10)
+        search_response.raise_for_status()
 
-        data = response.json()
-        docs = data.get("docs", [])
+        search_data = search_response.json()
+        docs = search_data.get("docs", [])
 
         if not docs:
             book_cache[cache_key] = fallback
@@ -79,22 +79,44 @@ def get_book_info(title, author):
         cover_id = book_data.get("cover_i")
 
         if cover_id:
-            # M uses medium-sized covers, which load faster than large covers
             cover_url = f"https://covers.openlibrary.org/b/id/{cover_id}-M.jpg"
         else:
             cover_url = fallback["cover"]
 
-        description = (
-            f"First published in {book_data.get('first_publish_year', 'unknown year')}."
-            if book_data.get("first_publish_year")
-            else "No description available."
-        )
+        subjects = book_data.get("subject", [])[:3]
+
+        description = "No description available."
+
+        # Open Library search results often include a work key.
+        # We use this to make a second request for a better description.
+        work_key = book_data.get("key")
+
+        if work_key:
+            work_url = f"https://openlibrary.org{work_key}.json"
+
+            work_response = requests.get(work_url, timeout=10)
+            work_response.raise_for_status()
+
+            work_data = work_response.json()
+
+            work_description = work_data.get("description")
+
+            if isinstance(work_description, dict):
+                description = work_description.get("value", "No description available.")
+            elif isinstance(work_description, str):
+                description = work_description
+
+        # If no full description was found, use subjects as a better fallback
+        if description == "No description available.":
+            if subjects:
+                description = "Themes include " + ", ".join(subjects).lower() + "."
+            elif book_data.get("first_publish_year"):
+                description = f"First published in {book_data.get('first_publish_year')}."
 
         book_info = {
             "cover": cover_url,
             "description": description,
-            "rating": "N/A",
-            "ratings_count": 0
+            "subjects": subjects
         }
 
         # Save the fetched book details so future page loads are faster

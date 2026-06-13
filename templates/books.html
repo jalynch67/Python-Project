@@ -1,6 +1,10 @@
 {% extends "base.html" %} {% block content %}
 
-<h2>Available Books</h2>
+<section class="books-header">
+  <p class="eyebrow">Book Catalogue</p>
+  <h2>Available Books</h2>
+  <p>Explore fantasy novels, mythology, classics, and modern bestsellers.</p>
+</section>
 
 <div class="book-grid">
   {% for book in books %}
@@ -17,24 +21,37 @@
       "
     />
 
-    <h3>{{ book.title }}</h3>
+    <div class="book-content">
+      <div class="book-meta">
+        <span>{{ book.type }}</span>
+        <span>{{ book.year }}</span>
+      </div>
 
-    <p class="author">{{ book.author }}</p>
+      <h3>{{ book.title }}</h3>
 
-    <div class="rating">⭐ {{ book.rating }} ({{ book.ratings_count }})</div>
+      <p class="author">by {{ book.author }}</p>
 
-    <p class="description">
-      {{ book.description[:150] if book.description else "No description
-      available" }}...
-    </p>
+      <p class="description">
+        {{ book.description[:160] if book.description else "No description
+        available" }}{% if book.description and book.description|length > 160
+        %}...{% endif %}
+      </p>
 
-    <form method="POST" action="{{ url_for('add_book') }}">
-      <input type="hidden" name="title" value="{{ book.title }}" />
+      {% if book.subjects %}
+      <div class="subject-list">
+        {% for subject in book.subjects %}
+        <span>{{ subject }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
 
-      <input type="hidden" name="author" value="{{ book.author }}" />
+      <form method="POST" action="{{ url_for('add_book') }}">
+        <input type="hidden" name="title" value="{{ book.title }}" />
+        <input type="hidden" name="author" value="{{ book.author }}" />
 
-      <button type="submit">Add to Reading List</button>
-    </form>
+        <button type="submit">Add to Reading List</button>
+      </form>
+    </div>
   </div>
 
   {% endfor %}

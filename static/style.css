@@ -1,18 +1,29 @@
 body {
   font-family: Arial, sans-serif;
   margin: 0;
+  background: #f4f4f4;
+  color: #222;
 }
 
 header {
   background-color: #333;
   color: white;
-  padding: 15px;
+  padding: 15px 20px;
+}
+
+header h1 {
+  margin: 0 0 10px;
 }
 
 nav a {
   color: white;
   text-decoration: none;
   margin-right: 15px;
+  font-weight: bold;
+}
+
+nav a:hover {
+  text-decoration: underline;
 }
 
 main {
@@ -27,23 +38,70 @@ input {
   padding: 8px;
 }
 
+/* General button styling */
 button {
-  padding: 8px 12px;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background: #4caf50;
+  color: white;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
+button:hover {
+  background: #3f9742;
+}
+
+/* Books page intro section */
+.books-header {
+  margin-bottom: 20px;
+  padding: 24px;
+  background: white;
+  border-left: 6px solid #4caf50;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+}
+
+.books-header .eyebrow {
+  margin: 0 0 6px;
+  color: #4caf50;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+
+.books-header h2 {
+  margin: 0 0 8px;
+  font-size: 30px;
+}
+
+.books-header p {
+  margin: 0;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* Books grid */
 .book-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 25px;
-  padding: 20px;
+  padding: 20px 0;
 }
 
+/* Book card */
 .book-card {
   background: white;
   border-radius: 15px;
   padding: 15px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   transition: 0.2s;
+  display: flex;
+  flex-direction: column;
+  scroll-margin-top: 20px;
 }
 
 .book-card:hover {
@@ -55,31 +113,76 @@ button {
   height: 320px;
   object-fit: cover;
   border-radius: 10px;
+  background: #e9e9e9;
+}
+
+.book-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+/* Book type and year labels */
+.book-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+
+.book-meta span {
+  background: #eef7ee;
+  color: #2f6f32;
+  padding: 5px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.book-card h3 {
+  margin: 8px 0 6px;
+  font-size: 18px;
+  line-height: 1.25;
 }
 
 .author {
   color: gray;
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 14px;
 }
 
-.rating {
-  color: goldenrod;
-  font-weight: bold;
-}
-
+/* Description text */
 .description {
   font-size: 14px;
-  min-height: 120px;
+  min-height: 80px;
+  color: #333;
+  line-height: 1.4;
 }
 
-button {
-  width: 100%;
-  padding: 10px;
-  border: none;
-  background: #4caf50;
-  color: white;
-  border-radius: 8px;
+/* Subject/tag list from Open Library */
+.subject-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 14px;
 }
 
+.subject-list span {
+  background: #f1f1f1;
+  color: #555;
+  padding: 5px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+/* Keeps Add to Reading List button aligned near bottom of card */
+.book-card form {
+  margin-top: auto;
+}
+
+/* See More button */
 .see-more-container {
   text-align: center;
   margin: 30px 0;
@@ -97,4 +200,49 @@ button {
 
 .see-more-button:hover {
   background: #555;
+}
+
+/* Smooth anchor movement when See More jumps to the new book */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Responsive layout */
+@media (max-width: 1100px) {
+  .book-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 800px) {
+  .book-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .book-cover {
+    height: 280px;
+  }
+}
+
+@media (max-width: 520px) {
+  main {
+    padding: 15px;
+  }
+
+  .book-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .books-header {
+    padding: 20px;
+  }
+
+  .books-header h2 {
+    font-size: 24px;
+  }
+
+  nav a {
+    display: inline-block;
+    margin-bottom: 8px;
+  }
 }
