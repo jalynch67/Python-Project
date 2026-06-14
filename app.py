@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from data import books
 import re
 import random
+from difflib import SequenceMatcher
 
 app = Flask(__name__)
 
@@ -162,39 +163,173 @@ def reading_list_page():
     return render_template("reading_list.html", reading_list=reading_list)
 
 
+# Normalises text for better searching
+def normalise_text(text):
+    text = str(text).lower()
+    text = re.sub(r"[^a-z0-9\s]", " ", text)
+    text = re.sub(r"\s+", " ", text)
+    return text.strip()
+
+
+# Checks if the search term matches the start of any word
+def matches_word_start(search_term, text):
+    words = normalise_text(text).split()
+
+    for word in words:
+        if word.startswith(search_term):
+            return True
+
+    return False
+
+
+# Gives each book a search score based on how strongly it matches
+def get_search_score(book, search_term):
+    if not search_term:
+        return 0
+
+    search_term = normalise_text(search_term)
+
+    title = normalise_text(book.get("title", ""))
+    author = normalise_text(book.get("author", ""))
+    category = normalise_text(book.get("category", ""))
+    book_type = normalise_text(book.get("type", ""))
+    year = normalise_text(book.get("year", ""))
+    description = normalise_text(book.get("description", ""))
+    subjects = normalise_text(" ".join(book.get("subjects", [])))
+
+    searchable_text = " ".join([
+        title,
+        author,
+        category,
+        book_type,
+        year,
+        description,
+        subjects
+    ])
+
+    score = 0
+
+    # Strongest matches
+    if search_term == title:
+        score += 100
+
+    if title.startswith(search_term):
+        score += 80
+
+    if matches_word_start(search_term, title):
+        score += 70
+
+    if search_term in title:
+        score += 60
+
+    # Useful secondary matches
+    if matches_word_start(search_term, author):
+        score += 45
+
+    if search_term in author:
+        score += 40
+
+    if search_term in category:
+        score += 35
+
+    if search_term in subjects:
+        score += 30
+
+    if search_term in book_type:
+        score += 20
+
+    if search_term in year:
+        score += 20
+
+    if search_term in description:
+        score += 10
+
+    # Light fuzzy matching for typos, mostly useful for longer searches
+    if len(search_term) >= 3:
+        title_similarity = SequenceMatcher(None, search_term, title).ratio()
+
+        if title_similarity > 0.55:
+            score += int(title_similarity * 30)
+
+    # General fallback: if the search appears anywhere in the combined text
+    if search_term in searchable_text:
+        score += 5
+
+    return score
+
+
 # Book Search
 @app.route("/search", methods=["GET", "POST"])
 def search():
     results = []
-    search_term = ""
 
+    # Support both GET and POST searches
     if request.method == "POST":
-        search_term = request.form.get("search", "").lower()
+        search_term = request.form.get("search", "").strip()
+        selected_category = request.form.get("category", "All")
+        sort_by = request.form.get("sort", "relevance")
+    else:
+        search_term = request.args.get("search", "").strip()
+        selected_category = request.args.get("category", "All")
+        sort_by = request.args.get("sort", "relevance")
 
+    # Create category dropdown options from data.py
+    category_options = sorted(
+        set(book.get("category", "Uncategorised") for book in books)
+    )
+
+    # Only search once the user has entered a term or selected a category
+    has_searched = bool(search_term) or selected_category != "All"
+
+    if has_searched:
         for book in books:
-            title = book.get("title", "").lower()
-            author = book.get("author", "").lower()
-            description = book.get("description", "").lower()
-            subjects = " ".join(book.get("subjects", [])).lower()
-            category = book.get("category", "").lower()
+            matches_category = (
+                selected_category == "All"
+                or book.get("category", "Uncategorised") == selected_category
+            )
 
-            if (
-                search_term in title
-                or search_term in author
-                or search_term in description
-                or search_term in subjects
-                or search_term in category
-            ):
+            search_score = get_search_score(book, search_term)
+
+            # If no search term is entered, category filtering alone should show results
+            matches_search = bool(search_score) or not search_term
+
+            if matches_search and matches_category:
                 results.append({
                     **book,
                     "slug": create_slug(book["title"]),
-                    "in_reading_list": is_book_in_reading_list(book["title"])
+                    "in_reading_list": is_book_in_reading_list(book["title"]),
+                    "search_score": search_score
                 })
+
+    # Sort results
+    if sort_by == "relevance":
+        results = sorted(
+            results,
+            key=lambda book: book.get("search_score", 0),
+            reverse=True
+        )
+    elif sort_by == "title":
+        results = sorted(results, key=lambda book: book.get("title", ""))
+    elif sort_by == "author":
+        results = sorted(results, key=lambda book: book.get("author", ""))
+    elif sort_by == "year_old":
+        results = sorted(results, key=lambda book: book.get("year", 0))
+    elif sort_by == "year_new":
+        results = sorted(
+            results,
+            key=lambda book: book.get("year", 0),
+            reverse=True
+        )
 
     return render_template(
         "search.html",
         results=results,
-        search_term=search_term
+        search_term=search_term,
+        selected_category=selected_category,
+        category_options=category_options,
+        sort_by=sort_by,
+        has_searched=has_searched,
+        result_count=len(results)
     )
 
 

@@ -4,7 +4,10 @@
   <div>
     <p class="eyebrow">Find Your Next Read</p>
     <h1>Search Books</h1>
-    <p>Search the fantasy catalogue by book title.</p>
+    <p>
+      Search by title, author, category, subject, year, or keywords from a book
+      description.
+    </p>
   </div>
 </section>
 
@@ -16,38 +19,120 @@
 </div>
 {% endif %} {% endwith %}
 
-<section class="form-panel">
-  <form method="POST" class="row g-3 align-items-end">
-    <div class="col-md-9">
-      <label class="form-label">Book Title</label>
+<section class="form-panel search-panel">
+  <form
+    method="GET"
+    action="{{ url_for('search') }}"
+    class="row g-3 align-items-end"
+  >
+    <div class="col-lg-5 col-md-12">
+      <label class="form-label">Search Catalogue</label>
       <input
         class="form-control form-control-lg"
         type="text"
         name="search"
         value="{{ search_term }}"
-        placeholder="Search for The Hobbit, Mistborn, Fourth Wing..."
+        placeholder="Try Tolkien, dragon, magic school, Sanderson..."
       />
     </div>
 
-    <div class="col-md-3">
+    <div class="col-lg-3 col-md-6">
+      <label class="form-label">Category</label>
+      <select class="form-select form-select-lg" name="sort">
+        {% if sort_by == "relevance" %}
+        <option value="relevance" selected>Relevance</option>
+        {% else %}
+        <option value="relevance">Relevance</option>
+        {% endif %} {% if sort_by == "title" %}
+        <option value="title" selected>Title A-Z</option>
+        {% else %}
+        <option value="title">Title A-Z</option>
+        {% endif %} {% if sort_by == "author" %}
+        <option value="author" selected>Author A-Z</option>
+        {% else %}
+        <option value="author">Author A-Z</option>
+        {% endif %} {% if sort_by == "year_old" %}
+        <option value="year_old" selected>Oldest First</option>
+        {% else %}
+        <option value="year_old">Oldest First</option>
+        {% endif %} {% if sort_by == "year_new" %}
+        <option value="year_new" selected>Newest First</option>
+        {% else %}
+        <option value="year_new">Newest First</option>
+        {% endif %}
+      </select>
+    </div>
+
+    <div class="col-lg-2 col-md-6">
+      <label class="form-label">Sort By</label>
+      <select class="form-select form-select-lg" name="sort">
+        {% if sort_by == "title" %}
+        <option value="title" selected>Title A-Z</option>
+        {% else %}
+        <option value="title">Title A-Z</option>
+        {% endif %} {% if sort_by == "author" %}
+        <option value="author" selected>Author A-Z</option>
+        {% else %}
+        <option value="author">Author A-Z</option>
+        {% endif %} {% if sort_by == "year_old" %}
+        <option value="year_old" selected>Oldest First</option>
+        {% else %}
+        <option value="year_old">Oldest First</option>
+        {% endif %} {% if sort_by == "year_new" %}
+        <option value="year_new" selected>Newest First</option>
+        {% else %}
+        <option value="year_new">Newest First</option>
+        {% endif %}
+      </select>
+    </div>
+
+    <div class="col-lg-2 col-md-12">
       <button class="btn btn-primary btn-lg w-100" type="submit">Search</button>
+    </div>
+
+    <div class="col-12">
+      <div class="quick-searches">
+        <span>Try:</span>
+        <a href="{{ url_for('search', search='dragon') }}">dragon</a>
+        <a href="{{ url_for('search', search='Tolkien') }}">Tolkien</a>
+        <a href="{{ url_for('search', search='magic') }}">magic</a>
+        <a href="{{ url_for('search', search='romantasy') }}">romantasy</a>
+        <a href="{{ url_for('search', search='grimdark') }}">grimdark</a>
+        <a href="{{ url_for('search', search='Sanderson') }}">Sanderson</a>
+      </div>
     </div>
   </form>
 </section>
 
-{% if results %}
+{% if has_searched %}
 
 <div class="section-heading">
   <div>
-    <p class="eyebrow">Results</p>
-    <h2>Matching Books</h2>
+    <p class="eyebrow">Search Results</p>
+
+    {% if search_term %}
+    <h2>Results for “{{ search_term }}”</h2>
+    {% else %}
+    <h2>Filtered Results</h2>
+    {% endif %}
   </div>
+
+  <p class="section-subtitle">
+    Showing {{ result_count }} matching book{% if result_count != 1 %}s{% endif
+    %}.
+  </p>
 </div>
+
+{% if results %}
 
 <div class="book-grid">
   {% for book in results %}
+
   <div class="book-card">
-    <div class="cover-wrap">
+    <a
+      class="book-detail-link cover-wrap"
+      href="{{ url_for('book_detail', slug=book.slug) }}"
+    >
       <img
         class="book-cover"
         src="{{ book.cover }}"
@@ -58,15 +143,24 @@
           this.src = 'https://placehold.co/200x300?text=No+Cover';
         "
       />
-    </div>
+    </a>
 
     <div class="book-content">
       <div class="book-meta">
+        <span>{{ book.category if book.category else "Uncategorised" }}</span>
         <span>{{ book.type }}</span>
         <span>{{ book.year }}</span>
       </div>
 
-      <h3>{{ book.title }}</h3>
+      <h3>
+        <a
+          class="book-title-link"
+          href="{{ url_for('book_detail', slug=book.slug) }}"
+        >
+          {{ book.title }}
+        </a>
+      </h3>
+
       <p class="author">by {{ book.author }}</p>
 
       <p class="description">
@@ -75,6 +169,37 @@
         %}...{% endif %}
       </p>
 
+      {% if book.subjects %}
+      <div class="subject-list">
+        {% for subject in book.subjects[:3] %}
+        <span>{{ subject }}</span>
+        {% endfor %}
+      </div>
+      {% endif %} {% if book.in_reading_list %}
+
+      <div class="reading-list-actions">
+        <a
+          class="btn btn-success action-btn"
+          href="{{ url_for('reading_list_page') }}"
+        >
+          View List
+        </a>
+
+        <form
+          class="remove-reading-list-form"
+          method="POST"
+          action="{{ url_for('remove_book') }}"
+        >
+          <input type="hidden" name="title" value="{{ book.title }}" />
+
+          <button class="btn btn-danger action-btn" type="submit">
+            Remove
+          </button>
+        </form>
+      </div>
+
+      {% else %}
+
       <form
         class="book-action-form"
         method="POST"
@@ -82,29 +207,31 @@
       >
         <input type="hidden" name="title" value="{{ book.title }}" />
 
-        {% if book.in_reading_list %}
-        <a
-          class="btn btn-success w-100"
-          href="{{ url_for('reading_list_page') }}"
-        >
-          View in Reading List
-        </a>
-        {% else %}
-        <button class="btn btn-primary w-100" type="submit">
+        <button class="btn btn-primary action-btn w-100" type="submit">
           Add to Reading List
         </button>
-        {% endif %}
       </form>
+
+      {% endif %}
     </div>
   </div>
+
   {% endfor %}
 </div>
 
-{% elif search_term %}
+{% else %}
 
 <section class="empty-state">
+  <p class="eyebrow">No Results</p>
   <h2>No books found</h2>
-  <p>Try searching for another fantasy title.</p>
+  <p>
+    Try searching by title, author, category, subject, or a keyword like
+    “dragon”, “magic”, or “quest”.
+  </p>
+
+  <a class="btn btn-primary" href="{{ url_for('books_page') }}">
+    Browse All Books
+  </a>
 </section>
 
-{% endif %} {% endblock %}
+{% endif %} {% endif %} {% endblock %}
