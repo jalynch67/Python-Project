@@ -59,29 +59,109 @@
 </section>
 {% endif %}
 
-<section class="feature-grid">
-  <div class="feature-card">
-    <h3>Curated Fantasy Catalogue</h3>
-    <p>
-      Browse legendary series, classic adventures, modern fantasy, and
-      mythology-inspired novels.
-    </p>
+<section class="homepage-dashboard">
+  <div class="homepage-dashboard-header">
+    <div>
+      <p class="eyebrow">Reading Dashboard</p>
+      <h2>Your Bookiverse activity</h2>
+    </div>
+
+    <a
+      class="btn btn-primary dashboard-main-action"
+      href="{{ url_for('reading_list_page') }}"
+    >
+      Manage List
+    </a>
   </div>
 
-  <div class="feature-card">
-    <h3>Build a Reading List</h3>
-    <p>
-      Add books to your personal list and keep track of what you want to read
-      next.
-    </p>
+  <div class="homepage-stat-strip">
+    <div>
+      <span>Total</span>
+      <strong>{{ homepage_stats.total }}</strong>
+    </div>
+
+    <div>
+      <span>Reading</span>
+      <strong>{{ homepage_stats.currently_reading }}</strong>
+    </div>
+
+    <div>
+      <span>Finished</span>
+      <strong>{{ homepage_stats.finished }}</strong>
+    </div>
+
+    <div>
+      <span>Avg Rating</span>
+      <strong>{{ homepage_stats.average_rating }}</strong>
+    </div>
   </div>
 
-  <div class="feature-card">
-    <h3>Track Progress</h3>
-    <p>
-      Mark books as finished and leave your own rating once you complete them.
-    </p>
+  <div class="homepage-reading-row">
+    <div class="homepage-reading-row-header">
+      {% if continue_books %}
+      <div>
+        <span>Currently Reading</span>
+        <strong>Pick up where you left off</strong>
+      </div>
+      {% elif up_next_books %}
+      <div>
+        <span>Up Next</span>
+        <strong>Books waiting on your list</strong>
+      </div>
+      {% else %}
+      <div>
+        <span>Start Building</span>
+        <strong>Your reading list is empty</strong>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if continue_books %}
+    <div class="homepage-current-books">
+      {% for book in continue_books %}
+      <a href="{{ url_for('book_detail', slug=book.slug) }}">
+        <img src="{{ book.cover }}" alt="{{ book.title }}" loading="lazy" />
+        <div>
+          <strong>{{ book.title }}</strong>
+          <span>by {{ book.author }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% elif up_next_books %}
+    <div class="homepage-current-books">
+      {% for book in up_next_books %}
+      <a href="{{ url_for('book_detail', slug=book.slug) }}">
+        <img src="{{ book.cover }}" alt="{{ book.title }}" loading="lazy" />
+        <div>
+          <strong>{{ book.title }}</strong>
+          <span>by {{ book.author }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="homepage-empty-inline">
+      <p>Add a few books to make this dashboard useful.</p>
+      <a class="btn btn-primary" href="{{ url_for('books_page') }}">
+        Find Books
+      </a>
+    </div>
+    {% endif %}
   </div>
+
+  {% if category_cards %}
+  <div class="homepage-category-strip">
+    <span class="homepage-strip-label">Browse:</span>
+
+    {% for category, count in category_cards[:5] %}
+    <a href="{{ url_for('books_page', category=category) }}">
+      {{ category }}
+      <strong>{{ count }}</strong>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
 </section>
 
 {% endblock %}

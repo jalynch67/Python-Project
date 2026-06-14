@@ -1,4 +1,5 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %}
+{% block content %}
 
 <section class="hero-panel">
   <div>
@@ -12,30 +13,98 @@
 </section>
 
 <section class="form-panel">
-  <form method="POST" class="row g-3">
+  {% if errors %}
+  <div class="alert alert-danger mt-2" role="alert">
+    <strong>Please fix the following:</strong>
+    <ul class="mb-0 mt-2">
+      {% for error in errors %}
+      <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+   }}" class="row g-3" novalidate>
     <div class="col-md-6">
-      <label class="form-label">Your Name</label>
-      <input class="form-control" type="text" name="name" required />
+      <label class="form-label" for="name">Your Name</label>
+      <input
+        id="name"
+        class="form-control"
+        type="text"
+        name="name"
+        value="{{ form_data.name if form_data else '' }}"
+        required
+        minlength="2"
+        maxlength="60"
+        pattern="[A-Za-zÀ-ÿ .'-]+"
+        autocomplete="name"
+      />
+      <div class="form-text">Letters, spaces, apostrophes, hyphens, and full stops only.</div>
     </div>
 
     <div class="col-md-6">
-      <label class="form-label">Email</label>
-      <input class="form-control" type="email" name="email" required />
+      <label class="form-label" for="email">Email</label>
+      <input
+        id="email"
+        class="form-control"
+        type="email"
+        name="email"
+        value="{{ form_data.email if form_data else '' }}"
+        required
+        maxlength="120"
+        autocomplete="email"
+      />
     </div>
 
     <div class="col-md-6">
-      <label class="form-label">Book Title</label>
-      <input class="form-control" type="text" name="book_title" required />
+      <label class="form-label" for="book_title">Book Title</label>
+      <input
+        id="book_title"
+        class="form-control"
+        type="text"
+        name="book_title"
+        value="{{ form_data.book_title if form_data else '' }}"
+        required
+        minlength="2"
+        maxlength="120"
+        autocomplete="off"
+      />
     </div>
 
     <div class="col-md-6">
-      <label class="form-label">Author</label>
-      <input class="form-control" type="text" name="author" required />
+      <label class="form-label" for="author">Author</label>
+      <input
+        id="author"
+        class="form-control"
+        type="text"
+        name="author"
+        value="{{ form_data.author if form_data else '' }}"
+        required
+        minlength="2"
+        maxlength="80"
+        pattern="[A-Za-zÀ-ÿ .'-]+"
+        autocomplete="off"
+      />
     </div>
 
     <div class="col-12">
-      <label class="form-label">Why should we add this book?</label>
-      <textarea class="form-control" name="reason" rows="5"></textarea>
+      <label class="form-label" for="reason">Why should we add this book?</label>
+      <textarea
+        id="reason"
+        class="form-control"
+        name="reason"
+        rows="5"
+        required
+        minlength="10"
+        maxlength="500"
+      >{{ form_data.reason if form_data else '' }}</textarea>
+      <div class="form-text">10–500 characters.</div>
+    </div>
+
+    <!-- Honeypot field: should stay empty -->
+    <div class="d-none" aria-hidden="true">
+      <label for="website">Website</label>
+      <input id="website" type="text" name="website" tabindex="-1" autocomplete="off" />
     </div>
 
     <div class="col-12">
@@ -46,7 +115,7 @@
   </form>
 
   {% if message %}
-  <div class="alert alert-success mt-4">{{ message }}</div>
+  <div class="alert alert-success mt-4" role="alert">{{ message }}</div>
   {% endif %}
 </section>
 

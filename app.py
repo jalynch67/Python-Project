@@ -12,6 +12,34 @@ app.secret_key = "mysecretkey"
 
 READING_LIST_FILE = "reading_list.json"
 
+BOOK_REQUESTS_FILE = "book_requests.json"
+
+
+def load_book_requests():
+    if os.path.exists(BOOK_REQUESTS_FILE):
+        try:
+            with open(BOOK_REQUESTS_FILE, "r", encoding="utf-8") as file:
+                return json.load(file)
+        except json.JSONDecodeError:
+            return []
+
+    return []
+
+
+def save_book_request(form_data):
+    requests_list = load_book_requests()
+
+    requests_list.append({
+        "name": form_data["name"],
+        "email": form_data["email"],
+        "book_title": form_data["book_title"],
+        "author": form_data["author"],
+        "reason": form_data["reason"]
+    })
+
+    with open(BOOK_REQUESTS_FILE, "w", encoding="utf-8") as file:
+        json.dump(requests_list, file, indent=4)
+
 
 # Creates a URL-friendly version of a book title
 def create_slug(title):
@@ -99,6 +127,7 @@ def save_reading_list():
 reading_list = load_reading_list()
 
 
+# Homepage
 @app.route("/")
 def home():
     # Randomly select books with cover images for the homepage carousel
@@ -120,9 +149,74 @@ def home():
             "slug": create_slug(book["title"])
         })
 
+    # Build homepage reading list snapshot
+    total_reading_list_books = len(reading_list)
+    currently_reading_count = 0
+    finished_count = 0
+    want_to_read_count = 0
+    dnf_count = 0
+    ratings = []
+
+    for book in reading_list:
+        status = book.get("status", "Want to Read")
+
+        if status == "Currently Reading":
+            currently_reading_count += 1
+        elif status == "Finished":
+            finished_count += 1
+        elif status == "Want to Read":
+            want_to_read_count += 1
+        elif status == "Did Not Finish":
+            dnf_count += 1
+
+        if book.get("rating"):
+            ratings.append(int(book["rating"]))
+
+    if ratings:
+        average_rating = round(sum(ratings) / len(ratings), 1)
+    else:
+        average_rating = "N/A"
+
+    homepage_stats = {
+        "total": total_reading_list_books,
+        "currently_reading": currently_reading_count,
+        "finished": finished_count,
+        "want_to_read": want_to_read_count,
+        "dnf": dnf_count,
+        "average_rating": average_rating
+    }
+
+    # Show useful reading list items on the homepage
+    continue_books = [
+        book for book in reading_list
+        if book.get("status") == "Currently Reading"
+    ][:3]
+
+    up_next_books = [
+        book for book in reading_list
+        if book.get("status", "Want to Read") == "Want to Read"
+    ][:3]
+
+    # Build category shortcut cards from the catalogue
+    category_counts = {}
+
+    for book in books:
+        category = book.get("category", "Uncategorised")
+        category_counts[category] = category_counts.get(category, 0) + 1
+
+    category_cards = sorted(
+        category_counts.items(),
+        key=lambda item: item[1],
+        reverse=True
+    )[:6]
+
     return render_template(
         "home.html",
-        carousel_books=carousel_books
+        carousel_books=carousel_books,
+        homepage_stats=homepage_stats,
+        continue_books=continue_books,
+        up_next_books=up_next_books,
+        category_cards=category_cards
     )
 
 
@@ -523,16 +617,110 @@ def search():
 @app.route("/contact", methods=["GET", "POST"])
 def contact():
     message = ""
+    errors = []
+
+    form_data = {
+        "name": "",
+        "email": "",
+        "book_title": "",
+        "author": "",
+        "reason": ""
+    }
 
     if request.method == "POST":
-        name = request.form.get("name", "")
+        form_data["name"] = request.form.get("name", "").strip()
+        form_data["email"] = request.form.get("email", "").strip()
+        form_data["book_title"] = request.form.get("book_title", "").strip()
+        form_data["author"] = request.form.get("author", "").strip()
+        form_data["reason"] = request.form.get("reason", "").strip()
 
-        if len(name) < 2:
-            message = "Name must be at least 2 characters."
-        else:
-            message = f"Thank you for your request, {name}! We will review your suggestion."
+        # Honeypot anti-bot field
+        website = request.form.get("website", "").strip()
+        if website:
+            errors.append("Invalid form submission.")
 
-    return render_template("contact.html", message=message)
+        name_pattern = r"^[A-Za-zÀ-ÿ .'-]+$"
+        author_pattern = r"^[A-Za-zÀ-ÿ .'-]+$"
+        title_pattern = r"^[A-Za-z0-9À-ÿ &:'.,!?()\\-/]+$"
+        email_pattern = r"^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+
+        # Required checks
+        if not form_data["name"]:
+            errors.append("Name is required.")
+        if not form_data["email"]:
+            errors.append("Email is required.")
+        if not form_data["book_title"]:
+            errors.append("Book title is required.")
+        if not form_data["author"]:
+            errors.append("Author is required.")
+        if not form_data["reason"]:
+            errors.append("Reason is required.")
+
+        # Name validation
+        if form_data["name"]:
+            if len(form_data["name"]) < 2:
+                errors.append("Name must be at least 2 characters.")
+            elif len(form_data["name"]) > 60:
+                errors.append("Name must be 60 characters or fewer.")
+            elif not re.match(name_pattern, form_data["name"]):
+                errors.append("Name contains invalid characters.")
+
+        # Email validation
+        if form_data["email"]:
+            if len(form_data["email"]) > 120:
+                errors.append("Email must be 120 characters or fewer.")
+            elif not re.match(email_pattern, form_data["email"]):
+                errors.append("Please enter a valid email address.")
+
+        # Book title validation
+        if form_data["book_title"]:
+            if len(form_data["book_title"]) < 2:
+                errors.append("Book title must be at least 2 characters.")
+            elif len(form_data["book_title"]) > 120:
+                errors.append("Book title must be 120 characters or fewer.")
+            elif not re.match(title_pattern, form_data["book_title"]):
+                errors.append("Book title contains invalid characters.")
+
+        # Author validation
+        if form_data["author"]:
+            if len(form_data["author"]) < 2:
+                errors.append("Author name must be at least 2 characters.")
+            elif len(form_data["author"]) > 80:
+                errors.append("Author name must be 80 characters or fewer.")
+            elif not re.match(author_pattern, form_data["author"]):
+                errors.append("Author name contains invalid characters.")
+
+        # Reason validation
+        if form_data["reason"]:
+            if len(form_data["reason"]) < 10:
+                errors.append("Reason must be at least 10 characters.")
+            elif len(form_data["reason"]) > 500:
+                errors.append("Reason must be 500 characters or fewer.")
+            elif "<" in form_data["reason"] or ">" in form_data["reason"]:
+                errors.append("Reason contains invalid characters.")
+
+        if not errors:
+            save_book_request(form_data)
+
+            message = (
+                f"Thank you, {form_data['name']}! "
+                "Your book request has been submitted successfully."
+            )
+
+            form_data = {
+                "name": "",
+                "email": "",
+                "book_title": "",
+                "author": "",
+                "reason": ""
+            }
+
+    return render_template(
+        "contact.html",
+        message=message,
+        errors=errors,
+        form_data=form_data
+    )
 
 
 # Add book to reading list
