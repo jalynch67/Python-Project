@@ -1,8 +1,9 @@
+/* =========================================/* variables
+   ========================================= */
+
 :root {
   --ink: #16110f;
   --muted: #70645d;
-  --paper: #fffaf2;
-  --cream: #f7efe2;
   --gold: #d6a84f;
   --gold-hover: #e4b85f;
   --forest: #173f35;
@@ -12,6 +13,10 @@
   --border: rgba(22, 17, 15, 0.12);
   --shadow: 0 14px 32px rgba(27, 18, 10, 0.1);
 }
+
+/* =========================================
+   Base document styles
+   ========================================= */
 
 html {
   scroll-behavior: auto;
@@ -34,80 +39,10 @@ body {
     linear-gradient(180deg, #fffaf2 0%, #f2e7d8 100%);
 }
 
-/* Footer */
-.site-footer {
-  flex-shrink: 0;
-  margin-top: auto;
-  margin-bottom: 0;
-  background: linear-gradient(135deg, #15100e, #263f35);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-}
+/* =========================================
+   Header and primary navigation
+   ========================================= */
 
-.footer-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 24px;
-  padding: 18px 0;
-}
-
-.footer-brand {
-  max-width: 620px;
-}
-
-.footer-logo {
-  display: block;
-  color: #ffffff;
-  font-size: 22px;
-  font-weight: 900;
-  letter-spacing: -0.7px;
-  line-height: 1.1;
-  margin-bottom: 5px;
-}
-
-.footer-brand p {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.78);
-  font-size: 13px;
-  line-height: 1.45;
-}
-
-.footer-top-link {
-  flex: 0 0 auto;
-  color: rgba(255, 255, 255, 0.84);
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 800;
-  padding: 7px 11px;
-  border-radius: 999px;
-}
-
-.footer-top-link:hover,
-.footer-top-link:focus {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-/* Footer responsive */
-@media (max-width: 767px) {
-  .footer-inner {
-    display: block;
-    padding: 20px 22px;
-    text-align: center;
-  }
-
-  .footer-brand {
-    max-width: none;
-  }
-
-  .footer-top-link {
-    display: inline-block;
-    margin-top: 12px;
-  }
-}
-
-/* Header */
 .site-header {
   background: linear-gradient(135deg, #15100e, #263f35);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -168,7 +103,10 @@ body {
   filter: invert(1);
 }
 
-/* Layout */
+/* =========================================
+   Page layout and alerts
+   ========================================= */
+
 .page-shell {
   padding-top: 16px;
   padding-bottom: 40px;
@@ -198,7 +136,10 @@ body {
   scroll-margin-top: 110px;
 }
 
-/* Hero sections */
+/* =========================================
+   Hero sections
+   ========================================= */
+
 .home-hero,
 .hero-panel {
   border-radius: 22px;
@@ -261,7 +202,10 @@ body {
   margin-top: 20px;
 }
 
-/* Buttons */
+/* =========================================
+   Buttons
+   ========================================= */
+
 .btn {
   border-radius: 999px;
   font-weight: 800;
@@ -269,53 +213,22 @@ body {
 }
 
 /* Primary buttons */
-.btn-primary,
-a.btn-primary,
-button.btn-primary,
-.book-action-form .btn-primary,
-.book-action-form button.btn-primary,
-.action-btn.btn-primary,
-button.action-btn.btn-primary,
-.dashboard-main-action,
-a.dashboard-main-action,
-button.dashboard-main-action,
-.homepage-empty-inline .btn-primary,
-.homepage-empty-inline button.btn-primary {
+
+.btn-primary {
   background-color: var(--forest) !important;
   color: #ffffff !important;
   border: 1px solid var(--forest) !important;
 }
 
 .btn-primary:hover,
-.btn-primary:focus,
-a.btn-primary:hover,
-a.btn-primary:focus,
-button.btn-primary:hover,
-button.btn-primary:focus,
-.book-action-form .btn-primary:hover,
-.book-action-form .btn-primary:focus,
-.book-action-form button.btn-primary:hover,
-.book-action-form button.btn-primary:focus,
-.action-btn.btn-primary:hover,
-.action-btn.btn-primary:focus,
-button.action-btn.btn-primary:hover,
-button.action-btn.btn-primary:focus,
-.dashboard-main-action:hover,
-.dashboard-main-action:focus,
-a.dashboard-main-action:hover,
-a.dashboard-main-action:focus,
-button.dashboard-main-action:hover,
-button.dashboard-main-action:focus,
-.homepage-empty-inline .btn-primary:hover,
-.homepage-empty-inline .btn-primary:focus,
-.homepage-empty-inline button.btn-primary:hover,
-.homepage-empty-inline button.btn-primary:focus {
+.btn-primary:focus {
   background-color: var(--forest-light) !important;
   color: #ffffff !important;
   border-color: var(--forest-light) !important;
 }
 
-/* Homepage Browse Books button */
+/* Homepage hero primary button */
+
 .home-hero .btn-primary,
 .home-hero a.btn-primary,
 .home-hero button.btn-primary {
@@ -336,6 +249,7 @@ button.dashboard-main-action:focus,
 }
 
 /* Outline light buttons */
+
 .btn-outline-light,
 a.btn-outline-light,
 button.btn-outline-light {
@@ -356,6 +270,7 @@ button.btn-outline-light:focus {
 }
 
 /* Success buttons */
+
 .btn-success,
 a.btn-success,
 button.btn-success {
@@ -376,6 +291,7 @@ button.btn-success:focus {
 }
 
 /* Danger buttons */
+
 .btn-danger,
 a.btn-danger,
 button.btn-danger,
@@ -408,6 +324,7 @@ button.btn-danger:focus,
 }
 
 /* Dark buttons */
+
 .btn-dark,
 a.btn-dark,
 button.btn-dark {
@@ -428,6 +345,7 @@ button.btn-dark:focus {
 }
 
 /* Outline dark buttons */
+
 .btn-outline-dark,
 a.btn-outline-dark,
 button.btn-outline-dark {
@@ -447,7 +365,8 @@ button.btn-outline-dark:focus {
   border-color: var(--ink) !important;
 }
 
-/* DNF button */
+/* Secondary DNF action button */
+
 .status-secondary-form {
   display: flex;
   justify-content: flex-end;
@@ -478,7 +397,10 @@ button.btn-outline-dark:focus {
   border-color: rgba(185, 67, 67, 0.36) !important;
 }
 
-/* Shared panels */
+/* =========================================
+   Shared panels
+   ========================================= */
+
 .form-panel,
 .empty-state {
   background: rgba(255, 250, 242, 0.88);
@@ -487,7 +409,10 @@ button.btn-outline-dark:focus {
   box-shadow: var(--shadow);
 }
 
-/* Homepage carousel */
+/* =========================================
+   Homepage carousel
+   ========================================= */
+
 .cover-carousel-section {
   margin-top: 24px;
   padding: 20px;
@@ -618,7 +543,10 @@ button.btn-outline-dark:focus {
   }
 }
 
-/* Homepage dashboard */
+/* =========================================
+   Homepage dashboard
+   ========================================= */
+
 .homepage-dashboard {
   margin-top: 24px;
   padding: 20px;
@@ -842,7 +770,10 @@ button.btn-outline-dark:focus {
   font-weight: 900;
 }
 
-/* Compact filter panel */
+/* =========================================
+   Books filter panel
+   ========================================= */
+
 .filter-panel {
   margin-bottom: 14px;
   padding: 12px 14px;
@@ -892,7 +823,10 @@ button.btn-outline-dark:focus {
   font-weight: 800;
 }
 
-/* Section headings */
+/* =========================================
+   Shared section headings
+   ========================================= */
+
 .section-heading {
   display: flex;
   justify-content: space-between;
@@ -916,7 +850,10 @@ button.btn-outline-dark:focus {
   line-height: 1.4;
 }
 
-/* Book grid/cards */
+/* =========================================
+   Book grid and reusable book cards
+   ========================================= */
+
 .book-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -963,11 +900,35 @@ button.btn-outline-dark:focus {
   padding: 13px;
 }
 
-.book-meta {
+/* Book metadata and subject chips */
+
+.book-meta,
+.subject-list {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
-  margin-bottom: 8px;
+  list-style: none;
+  padding: 0;
+}
+
+.book-meta {
+  margin: 0 0 8px;
+}
+
+.subject-list {
+  margin: 3px 0 11px;
+}
+
+.book-meta li,
+.subject-list li {
+  margin: 0;
+  padding: 0;
+}
+
+.book-meta li span,
+.subject-list li span {
+  display: inline-flex;
+  align-items: center;
 }
 
 .book-meta span,
@@ -982,6 +943,14 @@ button.btn-outline-dark:focus {
   color: #7a5516;
   padding: 4px 8px;
 }
+
+.subject-list span {
+  background: rgba(23, 63, 53, 0.1);
+  color: var(--forest);
+  padding: 4px 8px;
+}
+
+/* Book card typography */
 
 .book-card h3 {
   margin: 0 0 5px;
@@ -1009,18 +978,7 @@ button.btn-outline-dark:focus {
   overflow: hidden;
 }
 
-.subject-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin: 3px 0 11px;
-}
-
-.subject-list span {
-  background: rgba(23, 63, 53, 0.1);
-  color: var(--forest);
-  padding: 4px 8px;
-}
+/* Book card actions */
 
 .book-action-form,
 .reading-list-actions {
@@ -1058,7 +1016,10 @@ button.btn-outline-dark:focus {
   justify-content: center;
 }
 
-/* Reading list page */
+/* =========================================
+   Reading list page cards
+   ========================================= */
+
 .reading-hero {
   padding: 20px 28px;
   margin-bottom: 14px;
@@ -1116,6 +1077,8 @@ button.btn-outline-dark:focus {
   margin: 2px 0 8px;
 }
 
+/* Reading card action buttons */
+
 .reading-card-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1141,6 +1104,8 @@ button.btn-outline-dark:focus {
   white-space: nowrap;
 }
 
+/* Reading status pills */
+
 .status-pill {
   width: fit-content;
   padding: 5px 9px;
@@ -1155,7 +1120,6 @@ button.btn-outline-dark:focus {
   color: #286338;
 }
 
-.status-pill.not-finished,
 .status-pill.want {
   background: rgba(214, 168, 79, 0.22);
   color: #7a5516;
@@ -1171,27 +1135,10 @@ button.btn-outline-dark:focus {
   color: var(--danger-dark);
 }
 
-.rating-box {
-  margin-top: 10px;
-  padding: 9px 11px;
-  border-radius: 13px;
-  background: rgba(214, 168, 79, 0.18);
-  color: #7a5516;
-  font-weight: 900;
-  font-size: 12.5px;
-}
+/* =========================================
+   Reading list statistics
+   ========================================= */
 
-.rating-form {
-  margin-top: 10px;
-}
-
-.rating-form .form-label {
-  font-size: 12.5px;
-  font-weight: 800;
-  color: var(--muted);
-}
-
-/* Reading list stats */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -1224,7 +1171,10 @@ button.btn-outline-dark:focus {
   font-weight: 900;
 }
 
-/* Combined rating and comment display */
+/* =========================================
+   Reading list review form and saved reviews
+   ========================================= */
+
 .combined-review-form {
   margin-top: 10px;
 }
@@ -1304,7 +1254,10 @@ button.btn-outline-dark:focus {
   line-height: 1.4;
 }
 
-/* Form pages */
+/* =========================================
+   Form pages
+   ========================================= */
+
 .form-panel {
   padding: 24px;
 }
@@ -1319,7 +1272,17 @@ button.btn-outline-dark:focus {
   box-shadow: 0 0 0 0.2rem rgba(23, 63, 53, 0.18);
 }
 
-/* Search page */
+.form-text {
+  margin-top: 6px;
+  color: #5b514b;
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+/* =========================================
+   Search page
+   ========================================= */
+
 .search-panel {
   margin-bottom: 22px;
 }
@@ -1344,6 +1307,8 @@ button.btn-outline-dark:focus {
   border-color: var(--forest);
   box-shadow: 0 0 0 0.18rem rgba(23, 63, 53, 0.16);
 }
+
+/* Suggested quick searches */
 
 .quick-searches {
   display: flex;
@@ -1375,7 +1340,10 @@ button.btn-outline-dark:focus {
   background: rgba(23, 63, 53, 0.16);
 }
 
-/* Suggestions */
+/* =========================================
+   Search suggestions and recommendation cards
+   ========================================= */
+
 .suggestion-section {
   margin-top: 24px;
   padding: 22px;
@@ -1458,7 +1426,10 @@ button.btn-outline-dark:focus {
   line-height: 1.35;
 }
 
-/* Empty state */
+/* =========================================
+   Empty states
+   ========================================= */
+
 .empty-state {
   text-align: center;
   padding: 44px 24px;
@@ -1468,7 +1439,10 @@ button.btn-outline-dark:focus {
   font-weight: 900;
 }
 
-/* See more */
+/* =========================================
+   See more controls
+   ========================================= */
+
 .see-more-container {
   text-align: center;
   margin: 26px 0 0;
@@ -1479,7 +1453,10 @@ button.btn-outline-dark:focus {
   font-size: 14px;
 }
 
-/* Book detail links */
+/* =========================================
+   Book links
+   ========================================= */
+
 .book-detail-link {
   display: block;
   text-decoration: none;
@@ -1495,7 +1472,10 @@ button.btn-outline-dark:focus {
   text-decoration: underline;
 }
 
-/* Book detail page */
+/* =========================================
+   Book detail page
+   ========================================= */
+
 .book-detail-hero {
   display: grid;
   grid-template-columns: 340px minmax(0, 1fr);
@@ -1578,7 +1558,10 @@ button.btn-outline-dark:focus {
   text-decoration: underline;
 }
 
-/* Related books */
+/* =========================================
+   Related books
+   ========================================= */
+
 .related-books-section {
   margin-top: 30px;
   padding: 22px;
@@ -1661,10 +1644,69 @@ button.btn-outline-dark:focus {
 }
 
 /* =========================================
+   Footer
+   ========================================= */
+
+.site-footer {
+  flex-shrink: 0;
+  margin-top: auto;
+  margin-bottom: 0;
+  background: linear-gradient(135deg, #15100e, #263f35);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 18px 0;
+}
+
+.footer-brand {
+  max-width: 620px;
+}
+
+.footer-logo {
+  display: block;
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.7px;
+  line-height: 1.1;
+  margin-bottom: 5px;
+}
+
+.footer-brand p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.footer-top-link {
+  flex: 0 0 auto;
+  color: rgba(255, 255, 255, 0.84);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 7px 11px;
+  border-radius: 999px;
+}
+
+.footer-top-link:hover,
+.footer-top-link:focus {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* =========================================
    Accessibility helpers
    ========================================= */
 
 /* Skip link */
+
 .skip-link {
   position: absolute;
   top: -48px;
@@ -1684,6 +1726,7 @@ button.btn-outline-dark:focus {
 }
 
 /* Screen-reader-only content */
+
 .visually-hidden {
   position: absolute !important;
   width: 1px !important;
@@ -1697,6 +1740,7 @@ button.btn-outline-dark:focus {
 }
 
 /* Strong visible keyboard focus */
+
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
@@ -1707,7 +1751,8 @@ textarea:focus-visible,
   outline-offset: 3px;
 }
 
-/* Improve focus styling for custom buttons/links */
+/* Custom interactive element focus states */
+
 .btn:focus-visible,
 .nav-link:focus-visible,
 .book-title-link:focus-visible,
@@ -1720,59 +1765,13 @@ textarea:focus-visible,
   outline-offset: 3px;
 }
 
-/* Make the main content target visible when skip link lands */
+/* Skip-link target */
+
 main:focus {
   outline: none;
 }
 
-/* =========================================
-   Semantic list resets for updated templates
-   ========================================= */
-
-.book-meta,
-.subject-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.book-meta li,
-.subject-list li {
-  margin: 0;
-  padding: 0;
-}
-
-.book-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-bottom: 8px;
-}
-
-.subject-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin: 3px 0 11px;
-}
-
-/* Preserve existing chip appearance */
-.book-meta li span,
-.subject-list li span {
-  display: inline-flex;
-  align-items: center;
-}
-
-/* =========================================
-   Accessible helper text / alerts
-   ========================================= */
-
-.form-text {
-  margin-top: 6px;
-  color: #5b514b;
-  font-size: 12.5px;
-  line-height: 1.4;
-}
+/* Accessible alert text */
 
 .alert[role="status"],
 .alert[role="alert"] {
@@ -1780,28 +1779,9 @@ main:focus {
 }
 
 /* =========================================
-   Reading list / search / books card semantics
+   Responsive: large monitors
    ========================================= */
 
-.book-card article,
-article.book-card,
-article.reading-card {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Prevent list-style bullets from appearing inside semantic card lists */
-.book-card .book-meta,
-.book-card .subject-list,
-.reading-card .book-meta,
-.reading-card .subject-list,
-.related-books-section .subject-list,
-.suggestion-section .subject-list {
-  list-style: none;
-  padding-left: 0;
-}
-
-/* Responsive: large monitors */
 @media (min-width: 1400px) {
   .container {
     max-width: 1320px;
@@ -1821,7 +1801,10 @@ article.reading-card {
   }
 }
 
-/* Responsive: smaller desktops */
+/* =========================================
+   Responsive: smaller desktops
+   ========================================= */
+
 @media (max-width: 1199px) {
   .book-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -1845,7 +1828,10 @@ article.reading-card {
   }
 }
 
-/* Responsive: laptop */
+/* =========================================
+   Responsive: laptop
+   ========================================= */
+
 @media (min-width: 992px) and (max-width: 1399px) {
   .home-hero {
     min-height: 280px;
@@ -1878,7 +1864,10 @@ article.reading-card {
   }
 }
 
-/* Responsive: tablet */
+/* =========================================
+   Responsive: tablet
+   ========================================= */
+
 @media (max-width: 991px) {
   .home-hero {
     min-height: 290px;
@@ -1939,7 +1928,10 @@ article.reading-card {
   }
 }
 
-/* Responsive: mobile nav */
+/* =========================================
+   Responsive: mobile
+   ========================================= */
+
 @media (max-width: 767px) {
   .site-header .navbar.container {
     padding: 12px 20px;
@@ -2110,7 +2102,10 @@ article.reading-card {
   }
 }
 
-/* Responsive: phones */
+/* =========================================
+   Responsive: phones
+   ========================================= */
+
 @media (max-width: 575px) {
   .site-header .navbar.container {
     padding-left: 22px;
@@ -2237,5 +2232,26 @@ article.reading-card {
   .quick-searches a {
     font-size: 12px;
     padding: 6px 9px;
+  }
+}
+
+/* =========================================
+   Responsive: footer
+   ========================================= */
+
+@media (max-width: 767px) {
+  .footer-inner {
+    display: block;
+    padding: 20px 22px;
+    text-align: center;
+  }
+
+  .footer-brand {
+    max-width: none;
+  }
+
+  .footer-top-link {
+    display: inline-block;
+    margin-top: 12px;
   }
 }
