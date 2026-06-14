@@ -39,7 +39,7 @@ def find_book_by_slug(slug):
     return None
 
 
-# Makes older reading list items compatible with the new status system
+# Makes older reading list items compatible with the status/review system
 def normalise_reading_list_book(saved_book):
     title = saved_book.get("title")
     original_book = find_book_by_title(title)
@@ -60,6 +60,12 @@ def normalise_reading_list_book(saved_book):
             book["status"] = "Finished"
         else:
             book["status"] = "Want to Read"
+
+    if "rating" not in book:
+        book["rating"] = None
+
+    if "review" not in book:
+        book["review"] = ""
 
     return book
 
@@ -494,7 +500,8 @@ def add_book():
             **selected_book,
             "slug": create_slug(selected_book["title"]),
             "status": "Want to Read",
-            "rating": None
+            "rating": None,
+            "review": ""
         })
 
         save_reading_list()
@@ -558,6 +565,7 @@ def update_status():
 
             if status != "Finished":
                 book["rating"] = None
+                book["review"] = ""
 
             break
 
@@ -573,20 +581,38 @@ def update_status():
     return redirect(redirect_url)
 
 
-# Mark finished - kept for compatibility with older forms
-@app.route("/finish-book", methods=["POST"])
-def finish_book():
+# Combined rating and review system
+@app.route("/review-book", methods=["POST"])
+def review_book():
     title = request.form.get("title")
+    rating = request.form.get("rating")
+    review = request.form.get("review", "").strip()
     book_anchor = request.form.get("book_anchor")
 
+    saved_anything = False
+
     for book in reading_list:
-        if book["title"] == title:
-            book["status"] = "Finished"
+        if book["title"] == title and book.get("status") == "Finished":
+            if rating:
+                book["rating"] = int(rating)
+                saved_anything = True
+            else:
+                book["rating"] = None
+
+            if review:
+                book["review"] = review
+                saved_anything = True
+            else:
+                book["review"] = ""
+
             break
 
     save_reading_list()
 
-    flash("Book marked as finished.")
+    if saved_anything:
+        flash("Review saved.")
+    else:
+        flash("No rating or review was added.")
 
     redirect_url = url_for("reading_list_page")
 
@@ -596,7 +622,7 @@ def finish_book():
     return redirect(redirect_url)
 
 
-# Rating system
+# Rating system - kept for compatibility with any older forms
 @app.route("/rate-book", methods=["POST"])
 def rate_book():
     title = request.form.get("title")
@@ -605,7 +631,8 @@ def rate_book():
 
     for book in reading_list:
         if book["title"] == title and book.get("status") == "Finished":
-            book["rating"] = int(rating)
+            if rating:
+                book["rating"] = int(rating)
             break
 
     save_reading_list()

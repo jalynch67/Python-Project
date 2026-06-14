@@ -6,7 +6,7 @@
     <h1>Your Reading List</h1>
     <p>
       Track your fantasy books, update your reading status, mark books as
-      finished, and rate completed reads.
+      finished, and add an optional rating or comment.
     </p>
   </div>
 </section>
@@ -189,13 +189,25 @@
       </form>
       {% endif %} {% if book.status == "Finished" %}
       <div id="rating-book-{{ loop.index }}" class="rating-area">
-        {% if book.rating %}
-        <div class="rating-box">Your Rating: {{ book.rating }}/5</div>
+        {% if book.rating or book.review %}
+        <div class="saved-review-card">
+          {% if book.rating %}
+          <div class="saved-rating">
+            <span>Your Rating</span>
+            <strong>{{ book.rating }}/5</strong>
+          </div>
+          {% endif %} {% if book.review %}
+          <div class="saved-comment">
+            <span>Your Comment</span>
+            <p>{{ book.review }}</p>
+          </div>
+          {% endif %}
+        </div>
         {% else %}
         <form
-          class="rating-form"
+          class="combined-review-form"
           method="POST"
-          action="{{ url_for('rate_book') }}"
+          action="{{ url_for('review_book') }}"
         >
           <input type="hidden" name="title" value="{{ book.title }}" />
           <input
@@ -204,20 +216,27 @@
             value="rating-book-{{ loop.index }}"
           />
 
-          <label class="form-label">Rate this book</label>
+          <label class="form-label">Optional rating</label>
+          <select class="form-select" name="rating">
+            <option value="">No star rating</option>
+            <option value="1">1 / 5</option>
+            <option value="2">2 / 5</option>
+            <option value="3">3 / 5</option>
+            <option value="4">4 / 5</option>
+            <option value="5">5 / 5</option>
+          </select>
 
-          <div class="d-flex gap-2">
-            <input
-              class="form-control"
-              type="number"
-              name="rating"
-              min="1"
-              max="5"
-              required
-            />
+          <label class="form-label review-text-label">Optional comment</label>
+          <textarea
+            class="form-control"
+            name="review"
+            rows="4"
+            placeholder="Leave a short comment if you want..."
+          ></textarea>
 
-            <button class="btn btn-primary" type="submit">Save</button>
-          </div>
+          <button class="btn btn-primary review-save-button" type="submit">
+            Save Rating / Comment
+          </button>
         </form>
         {% endif %}
       </div>
