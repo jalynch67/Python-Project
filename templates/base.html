@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bookiverse</title>
+    <title>{% block title %}Bookiverse{% endblock %}</title>
 
     <!-- Bootstrap CSS -->
     <link
@@ -21,9 +21,18 @@
   </head>
 
   <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
     <header class="site-header">
-      <nav class="navbar navbar-expand-md container">
-        <a class="brand-logo navbar-brand" href="{{ url_for('home') }}">
+      <nav
+        class="navbar navbar-expand-md container"
+        aria-label="Primary navigation"
+      >
+        <a
+          class="brand-logo navbar-brand"
+          href="{{ url_for('home') }}"
+          aria-label="Bookiverse home"
+        >
           Bookiverse
         </a>
 
@@ -34,19 +43,23 @@
           data-bs-target="#bookiverseNavbar"
           aria-controls="bookiverseNavbar"
           aria-expanded="false"
-          aria-label="Toggle navigation"
+          aria-label="Open navigation menu"
         >
-          <span class="navbar-toggler-icon"></span>
+          <span class="navbar-toggler-icon" aria-hidden="true"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="bookiverseNavbar">
           <div class="navbar-nav nav-links ms-md-auto">
             <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+
             <a class="nav-link" href="{{ url_for('books_page') }}">Books</a>
+
             <a class="nav-link" href="{{ url_for('reading_list_page') }}">
               Reading List
             </a>
+
             <a class="nav-link" href="{{ url_for('search') }}">Search</a>
+
             <a class="nav-link" href="{{ url_for('contact') }}">
               Request a Book
             </a>
@@ -55,7 +68,26 @@
       </nav>
     </header>
 
-    <main class="container page-shell">{% block content %}{% endblock %}</main>
+    <main id="main-content" class="container page-shell" tabindex="-1">
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer" aria-label="Site footer">
+      <div class="container footer-inner">
+        <div class="footer-brand">
+          <span class="footer-logo">Bookiverse</span>
+          <p>
+            A fantasy reading companion for discovering books and tracking your
+            reading journey.
+          </p>
+          <p class="footer-copyright">
+            &copy; 2026 Bookiverse. All rights reserved.
+          </p>
+        </div>
+
+        <a class="footer-top-link" href="#main-content"> Back to top </a>
+      </div>
+    </footer>
 
     <!-- Bootstrap JS bundle required for mobile hamburger menu -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>

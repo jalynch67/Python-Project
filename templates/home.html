@@ -1,15 +1,16 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} {% block title %}Home | Bookiverse{% endblock %} {%
+block content %}
 
-<section class="home-hero">
+<section class="home-hero" aria-labelledby="home-page-title">
   <div class="home-hero-content">
     <p class="eyebrow">Welcome to Bookiverse</p>
-    <h1>Your fantasy reading companion</h1>
+    <h1 id="home-page-title">Your fantasy reading companion</h1>
     <p>
       Explore a curated library of fantasy books, build your own reading list,
       mark books as finished, and rate your completed reads.
     </p>
 
-    <div class="hero-actions">
+    <div class="hero-actions" aria-label="Homepage actions">
       <a class="btn btn-primary" href="{{ url_for('books_page') }}">
         Browse Books
       </a>
@@ -25,32 +26,45 @@
 </section>
 
 {% if carousel_books %}
-<section class="cover-carousel-section">
+<section
+  class="cover-carousel-section"
+  aria-labelledby="featured-shelf-heading"
+>
   <div class="carousel-heading">
     <div>
       <p class="eyebrow">Featured Shelf</p>
-      <h2>Discover your next fantasy read</h2>
+      <h2 id="featured-shelf-heading">Discover your next fantasy read</h2>
     </div>
 
     <p>A rotating shelf of books from the Bookiverse catalogue.</p>
   </div>
 
-  <div class="cover-carousel">
+  <div class="cover-carousel" aria-label="Featured books">
     <div class="cover-carousel-track">
       {% for book in carousel_books %}
       <a
         class="carousel-book"
         href="{{ url_for('book_detail', slug=book.slug) }}"
+        aria-label="View details for {{ book.title }}"
       >
-        <img src="{{ book.cover }}" alt="{{ book.title }}" loading="lazy" />
+        <img
+          src="{{ book.cover }}"
+          alt="Cover of {{ book.title }}"
+          loading="lazy"
+        />
         <span>{{ book.title }}</span>
       </a>
       {% endfor %} {% for book in carousel_books %}
       <a
         class="carousel-book"
         href="{{ url_for('book_detail', slug=book.slug) }}"
+        aria-label="View details for {{ book.title }}"
       >
-        <img src="{{ book.cover }}" alt="{{ book.title }}" loading="lazy" />
+        <img
+          src="{{ book.cover }}"
+          alt="Cover of {{ book.title }}"
+          loading="lazy"
+        />
         <span>{{ book.title }}</span>
       </a>
       {% endfor %}
@@ -59,11 +73,11 @@
 </section>
 {% endif %}
 
-<section class="homepage-dashboard">
+<section class="homepage-dashboard" aria-labelledby="dashboard-heading">
   <div class="homepage-dashboard-header">
     <div>
       <p class="eyebrow">Reading Dashboard</p>
-      <h2>Your Bookiverse activity</h2>
+      <h2 id="dashboard-heading">Your Bookiverse activity</h2>
     </div>
 
     <a
@@ -74,7 +88,7 @@
     </a>
   </div>
 
-  <div class="homepage-stat-strip">
+  <div class="homepage-stat-strip" aria-label="Reading statistics">
     <div>
       <span>Total</span>
       <strong>{{ homepage_stats.total }}</strong>
@@ -96,31 +110,44 @@
     </div>
   </div>
 
-  <div class="homepage-reading-row">
+  <div class="homepage-reading-row" aria-labelledby="reading-progress-heading">
     <div class="homepage-reading-row-header">
       {% if continue_books %}
       <div>
         <span>Currently Reading</span>
-        <strong>Pick up where you left off</strong>
+        <strong id="reading-progress-heading"
+          >Pick up where you left off</strong
+        >
       </div>
       {% elif up_next_books %}
       <div>
         <span>Up Next</span>
-        <strong>Books waiting on your list</strong>
+        <strong id="reading-progress-heading"
+          >Books waiting on your list</strong
+        >
       </div>
       {% else %}
       <div>
         <span>Start Building</span>
-        <strong>Your reading list is empty</strong>
+        <strong id="reading-progress-heading"
+          >Your reading list is empty</strong
+        >
       </div>
       {% endif %}
     </div>
 
     {% if continue_books %}
-    <div class="homepage-current-books">
+    <div class="homepage-current-books" aria-label="Currently reading books">
       {% for book in continue_books %}
-      <a href="{{ url_for('book_detail', slug=book.slug) }}">
-        <img src="{{ book.cover }}" alt="{{ book.title }}" loading="lazy" />
+      <a
+        href="{{ url_for('book_detail', slug=book.slug) }}"
+        aria-label="View details for {{ book.title }} by {{ book.author }}"
+      >
+        <img
+          src="{{ book.cover }}"
+          alt="Cover of {{ book.title }}"
+          loading="lazy"
+        />
         <div>
           <strong>{{ book.title }}</strong>
           <span>by {{ book.author }}</span>
@@ -129,10 +156,17 @@
       {% endfor %}
     </div>
     {% elif up_next_books %}
-    <div class="homepage-current-books">
+    <div class="homepage-current-books" aria-label="Up next books">
       {% for book in up_next_books %}
-      <a href="{{ url_for('book_detail', slug=book.slug) }}">
-        <img src="{{ book.cover }}" alt="{{ book.title }}" loading="lazy" />
+      <a
+        href="{{ url_for('book_detail', slug=book.slug) }}"
+        aria-label="View details for {{ book.title }} by {{ book.author }}"
+      >
+        <img
+          src="{{ book.cover }}"
+          alt="Cover of {{ book.title }}"
+          loading="lazy"
+        />
         <div>
           <strong>{{ book.title }}</strong>
           <span>by {{ book.author }}</span>
@@ -151,11 +185,19 @@
   </div>
 
   {% if category_cards %}
-  <div class="homepage-category-strip">
-    <span class="homepage-strip-label">Browse:</span>
+  <div
+    class="homepage-category-strip"
+    aria-labelledby="browse-categories-heading"
+  >
+    <span class="homepage-strip-label" id="browse-categories-heading">
+      Browse:
+    </span>
 
     {% for category, count in category_cards[:5] %}
-    <a href="{{ url_for('books_page', category=category) }}">
+    <a
+      href="{{ url_for('books_page', category=category) }}"
+      aria-label="Browse {{ category }} books, {{ count }} available"
+    >
       {{ category }}
       <strong>{{ count }}</strong>
     </a>

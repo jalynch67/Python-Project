@@ -1,10 +1,11 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} {% block title %}{{ book.title }} | Bookiverse{%
+endblock %} {% block content %}
 
-<section class="book-detail-hero">
+<section class="book-detail-hero" aria-labelledby="book-title">
   <div class="book-detail-cover">
     <img
       src="{{ book.cover }}"
-      alt="{{ book.title }}"
+      alt="Cover of {{ book.title }} by {{ book.author }}"
       loading="lazy"
       onerror="
         this.onerror = null;
@@ -16,32 +17,46 @@
   <div class="book-detail-content">
     <p class="eyebrow">Book Details</p>
 
-    <h1>{{ book.title }}</h1>
+    <h1 id="book-title">{{ book.title }}</h1>
 
     <p class="book-detail-author">by {{ book.author }}</p>
 
-    <div class="book-meta detail-meta">
-      <span>{{ book.category if book.category else "Uncategorised" }}</span>
-      <span>{{ book.type }}</span>
-      <span>{{ book.year }}</span>
-    </div>
+    <ul class="book-meta detail-meta" aria-label="Book information">
+      <li>
+        <span>{{ book.category if book.category else "Uncategorised" }}</span>
+      </li>
+      <li>
+        <span>{{ book.type }}</span>
+      </li>
+      <li>
+        <span>{{ book.year }}</span>
+      </li>
+    </ul>
 
     {% if book.subjects %}
-    <div class="subject-list detail-subjects">
-      {% for subject in book.subjects[:5] %}
-      <span>{{ subject }}</span>
-      {% endfor %}
+    <div aria-labelledby="book-subjects-heading">
+      <h2 id="book-subjects-heading" class="visually-hidden">Subjects</h2>
+      <ul class="subject-list detail-subjects" aria-label="Book subjects">
+        {% for subject in book.subjects[:5] %}
+        <li><span>{{ subject }}</span></li>
+        {% endfor %}
+      </ul>
     </div>
     {% endif %}
 
-    <p class="book-detail-description">
-      {{ book.description if book.description else "No description available."
-      }}
-    </p>
+    <div aria-labelledby="book-description-heading">
+      <h2 id="book-description-heading" class="visually-hidden">Description</h2>
+      <p class="book-detail-description">
+        {{ book.description if book.description else "No description available."
+        }}
+      </p>
+    </div>
 
     {% if book.in_reading_list %}
-
-    <div class="reading-list-actions detail-actions">
+    <div
+      class="reading-list-actions detail-actions"
+      aria-label="Reading list actions"
+    >
       <a
         class="btn btn-success action-btn"
         href="{{ url_for('reading_list_page') }}"
@@ -53,6 +68,7 @@
         class="remove-reading-list-form"
         method="POST"
         action="{{ url_for('remove_book') }}"
+        aria-label="Remove {{ book.title }} from reading list"
       >
         <input type="hidden" name="title" value="{{ book.title }}" />
 
@@ -61,13 +77,12 @@
         </button>
       </form>
     </div>
-
     {% else %}
-
     <form
       class="book-action-form detail-add-form"
       method="POST"
       action="{{ url_for('add_book') }}"
+      aria-label="Add {{ book.title }} to reading list"
     >
       <input type="hidden" name="title" value="{{ book.title }}" />
 
@@ -75,21 +90,24 @@
         Add to Reading List
       </button>
     </form>
-
     {% endif %}
 
-    <a class="back-link" href="{{ url_for('books_page') }}">
-      ← Back to Books
+    <a
+      class="back-link"
+      href="{{ url_for('books_page') }}"
+      aria-label="Go back to the books page"
+    >
+      <span aria-hidden="true">←</span> Back to Books
     </a>
   </div>
 </section>
 
 {% if related_books %}
-<section class="related-books-section">
+<section class="related-books-section" aria-labelledby="related-books-heading">
   <div class="section-heading">
     <div>
       <p class="eyebrow">More Like This</p>
-      <h2>Related Books</h2>
+      <h2 id="related-books-heading">Related Books</h2>
     </div>
 
     <p class="section-subtitle">
@@ -102,10 +120,11 @@
     <a
       class="related-book-card"
       href="{{ url_for('book_detail', slug=related.slug) }}"
+      aria-label="View details for {{ related.title }} by {{ related.author }}"
     >
       <img
         src="{{ related.cover }}"
-        alt="{{ related.title }}"
+        alt="Cover of {{ related.title }} by {{ related.author }}"
         loading="lazy"
         onerror="
           this.onerror = null;

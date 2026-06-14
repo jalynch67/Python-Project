@@ -1,9 +1,10 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} {% block title %}Search Books | Bookiverse{% endblock
+%} {% block content %}
 
-<section class="hero-panel">
+<section class="hero-panel" aria-labelledby="search-page-title">
   <div>
     <p class="eyebrow">Find Your Next Read</p>
-    <h1>Search Books</h1>
+    <h1 id="search-page-title">Search Books</h1>
     <p>
       Search by title, author, category, subject, year, or keywords from a book
       description.
@@ -12,33 +13,42 @@
 </section>
 
 {% with messages = get_flashed_messages() %} {% if messages %}
-<div class="flash-messages page-alerts">
+<div class="flash-messages page-alerts" aria-live="polite" aria-atomic="true">
   {% for message in messages %}
-  <div class="alert alert-success" role="alert">{{ message }}</div>
+  <div class="alert alert-success" role="status">{{ message }}</div>
   {% endfor %}
 </div>
 {% endif %} {% endwith %}
 
-<section class="form-panel search-panel">
+<section class="form-panel search-panel" aria-labelledby="search-form-heading">
+  <h2 id="search-form-heading" class="visually-hidden">Book search form</h2>
+
   <form
     method="GET"
     action="{{ url_for('search') }}"
     class="row g-3 align-items-end"
+    role="search"
   >
     <div class="col-lg-5 col-md-12">
-      <label class="form-label">Search Catalogue</label>
+      <label class="form-label" for="search">Search Catalogue</label>
       <input
         class="form-control form-control-lg"
+        id="search"
         type="text"
         name="search"
         value="{{ search_term }}"
         placeholder="Try Tolkien, dragon, magic school, Sanderson..."
+        aria-describedby="search-help"
       />
+      <div id="search-help" class="visually-hidden">
+        Search by title, author, category, subject, year, or description
+        keyword.
+      </div>
     </div>
 
     <div class="col-lg-3 col-md-6">
-      <label class="form-label">Category</label>
-      <select class="form-select form-select-lg" name="category">
+      <label class="form-label" for="category">Category</label>
+      <select class="form-select form-select-lg" id="category" name="category">
         {% if selected_category == "All" %}
         <option value="All" selected>All Categories</option>
         {% else %}
@@ -53,8 +63,8 @@
     </div>
 
     <div class="col-lg-2 col-md-6">
-      <label class="form-label">Sort By</label>
-      <select class="form-select form-select-lg" name="sort">
+      <label class="form-label" for="sort">Sort By</label>
+      <select class="form-select form-select-lg" id="sort" name="sort">
         {% if sort_by == "relevance" %}
         <option value="relevance" selected>Relevance</option>
         {% else %}
@@ -84,7 +94,7 @@
     </div>
 
     <div class="col-12">
-      <div class="quick-searches">
+      <div class="quick-searches" aria-label="Suggested search terms">
         <span>Try:</span>
         <a href="{{ url_for('search', search='dragon') }}">dragon</a>
         <a href="{{ url_for('search', search='Tolkien') }}">Tolkien</a>
@@ -98,11 +108,11 @@
 </section>
 
 {% if not has_searched and trending_books %}
-<section class="suggestion-section">
+<section class="suggestion-section" aria-labelledby="trending-books-heading">
   <div class="section-heading">
     <div>
       <p class="eyebrow">Trending Picks</p>
-      <h2>Popular fantasy books to explore</h2>
+      <h2 id="trending-books-heading">Popular fantasy books to explore</h2>
     </div>
 
     <p class="section-subtitle">
@@ -111,15 +121,16 @@
     </p>
   </div>
 
-  <div class="suggestion-grid">
+  <div class="suggestion-grid" aria-label="Trending books">
     {% for book in trending_books %}
     <a
       class="suggestion-card"
       href="{{ url_for('book_detail', slug=book.slug) }}"
+      aria-label="View details for {{ book.title }} by {{ book.author }}"
     >
       <img
         src="{{ book.cover }}"
-        alt="{{ book.title }}"
+        alt="Cover of {{ book.title }}"
         loading="lazy"
         onerror="
           this.onerror = null;
@@ -137,167 +148,181 @@
   </div>
 </section>
 {% endif %} {% if has_searched %}
+<section aria-labelledby="search-results-heading">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Search Results</p>
 
-<div class="section-heading">
-  <div>
-    <p class="eyebrow">Search Results</p>
+      {% if search_term %}
+      <h2 id="search-results-heading">Results for “{{ search_term }}”</h2>
+      {% else %}
+      <h2 id="search-results-heading">Filtered Results</h2>
+      {% endif %}
+    </div>
 
-    {% if search_term %}
-    <h2>Results for “{{ search_term }}”</h2>
-    {% else %}
-    <h2>Filtered Results</h2>
-    {% endif %}
+    <p class="section-subtitle" aria-live="polite">
+      Showing {{ result_count }} matching book{% if result_count != 1 %}s{%
+      endif %}.
+    </p>
   </div>
 
-  <p class="section-subtitle">
-    Showing {{ result_count }} matching book{% if result_count != 1 %}s{% endif
-    %}.
-  </p>
-</div>
+  {% if results %}
 
-{% if results %}
-
-<div class="book-grid">
-  {% for book in results %}
-
-  <div class="book-card">
-    <a
-      class="book-detail-link cover-wrap"
-      href="{{ url_for('book_detail', slug=book.slug) }}"
+  <div class="book-grid" aria-label="Search results">
+    {% for book in results %}
+    <article
+      class="book-card"
+      aria-labelledby="search-book-title-{{ loop.index }}"
     >
-      <img
-        class="book-cover"
-        src="{{ book.cover }}"
-        alt="{{ book.title }}"
-        loading="lazy"
-        onerror="
-          this.onerror = null;
-          this.src = 'https://placehold.co/200x300?text=No+Cover';
-        "
-      />
-    </a>
+      <a
+        class="book-detail-link cover-wrap"
+        href="{{ url_for('book_detail', slug=book.slug) }}"
+        aria-label="View details for {{ book.title }} by {{ book.author }}"
+      >
+        <img
+          class="book-cover"
+          src="{{ book.cover }}"
+          alt="Cover of {{ book.title }}"
+          loading="lazy"
+          onerror="
+            this.onerror = null;
+            this.src = 'https://placehold.co/200x300?text=No+Cover';
+          "
+        />
+      </a>
 
-    <div class="book-content">
-      <div class="book-meta">
-        <span>{{ book.category if book.category else "Uncategorised" }}</span>
-        <span>{{ book.type }}</span>
-        <span>{{ book.year }}</span>
-      </div>
+      <div class="book-content">
+        <ul class="book-meta" aria-label="Book information">
+          <li>
+            <span
+              >{{ book.category if book.category else "Uncategorised" }}</span
+            >
+          </li>
+          <li><span>{{ book.type }}</span></li>
+          <li><span>{{ book.year }}</span></li>
+        </ul>
 
-      <h3>
-        <a
-          class="book-title-link"
-          href="{{ url_for('book_detail', slug=book.slug) }}"
+        <h3 id="search-book-title-{{ loop.index }}">
+          <a
+            class="book-title-link"
+            href="{{ url_for('book_detail', slug=book.slug) }}"
+          >
+            {{ book.title }}
+          </a>
+        </h3>
+
+        <p class="author">by {{ book.author }}</p>
+
+        <p class="description">
+          {{ book.description[:165] if book.description else "No description
+          available" }}{% if book.description and book.description|length > 165
+          %}...{% endif %}
+        </p>
+
+        {% if book.subjects %}
+        <ul class="subject-list" aria-label="Subjects">
+          {% for subject in book.subjects[:3] %}
+          <li><span>{{ subject }}</span></li>
+          {% endfor %}
+        </ul>
+        {% endif %} {% if book.in_reading_list %}
+        <div
+          class="reading-list-actions"
+          aria-label="Reading list actions for {{ book.title }}"
         >
-          {{ book.title }}
-        </a>
-      </h3>
+          <a
+            class="btn btn-success action-btn"
+            href="{{ url_for('reading_list_page') }}"
+          >
+            View List
+          </a>
 
-      <p class="author">by {{ book.author }}</p>
+          <form
+            class="remove-reading-list-form"
+            method="POST"
+            action="{{ url_for('remove_book') }}"
+            aria-label="Remove {{ book.title }} from reading list"
+          >
+            <input type="hidden" name="title" value="{{ book.title }}" />
 
-      <p class="description">
-        {{ book.description[:165] if book.description else "No description
-        available" }}{% if book.description and book.description|length > 165
-        %}...{% endif %}
-      </p>
+            <button class="btn btn-danger action-btn" type="submit">
+              Remove
+            </button>
+          </form>
+        </div>
 
-      {% if book.subjects %}
-      <div class="subject-list">
-        {% for subject in book.subjects[:3] %}
-        <span>{{ subject }}</span>
-        {% endfor %}
-      </div>
-      {% endif %} {% if book.in_reading_list %}
-
-      <div class="reading-list-actions">
-        <a
-          class="btn btn-success action-btn"
-          href="{{ url_for('reading_list_page') }}"
-        >
-          View List
-        </a>
-
+        {% else %}
         <form
-          class="remove-reading-list-form"
+          class="book-action-form"
           method="POST"
-          action="{{ url_for('remove_book') }}"
+          action="{{ url_for('add_book') }}"
+          aria-label="Add {{ book.title }} to reading list"
         >
           <input type="hidden" name="title" value="{{ book.title }}" />
 
-          <button class="btn btn-danger action-btn" type="submit">
-            Remove
+          <button class="btn btn-primary action-btn w-100" type="submit">
+            Add to Reading List
           </button>
         </form>
+        {% endif %}
       </div>
-
-      {% else %}
-
-      <form
-        class="book-action-form"
-        method="POST"
-        action="{{ url_for('add_book') }}"
-      >
-        <input type="hidden" name="title" value="{{ book.title }}" />
-
-        <button class="btn btn-primary action-btn w-100" type="submit">
-          Add to Reading List
-        </button>
-      </form>
-
-      {% endif %}
-    </div>
-  </div>
-
-  {% endfor %}
-</div>
-
-{% else %}
-
-<section class="empty-state">
-  <p class="eyebrow">No Results</p>
-  <h2>No books found</h2>
-  <p>
-    Try searching by title, author, category, subject, or a keyword like
-    “dragon”, “magic”, or “quest”.
-  </p>
-
-  <a class="btn btn-primary" href="{{ url_for('books_page') }}">
-    Browse All Books
-  </a>
-</section>
-
-{% if trending_books %}
-<section class="suggestion-section">
-  <div class="section-heading">
-    <div>
-      <p class="eyebrow">Recommended Instead</p>
-      <h2>You might like these</h2>
-    </div>
-  </div>
-
-  <div class="suggestion-grid">
-    {% for book in trending_books %}
-    <a
-      class="suggestion-card"
-      href="{{ url_for('book_detail', slug=book.slug) }}"
-    >
-      <img
-        src="{{ book.cover }}"
-        alt="{{ book.title }}"
-        loading="lazy"
-        onerror="
-          this.onerror = null;
-          this.src = 'https://placehold.co/200x300?text=No+Cover';
-        "
-      />
-
-      <div class="suggestion-card-content">
-        <span>{{ book.category if book.category else "Fantasy" }}</span>
-        <h3>{{ book.title }}</h3>
-        <p>by {{ book.author }}</p>
-      </div>
-    </a>
+    </article>
     {% endfor %}
   </div>
+
+  {% else %}
+
+  <section class="empty-state" aria-labelledby="no-search-results-heading">
+    <p class="eyebrow">No Results</p>
+    <h2 id="no-search-results-heading">No books found</h2>
+    <p>
+      Try searching by title, author, category, subject, or a keyword like
+      “dragon”, “magic”, or “quest”.
+    </p>
+
+    <a class="btn btn-primary" href="{{ url_for('books_page') }}">
+      Browse All Books
+    </a>
+  </section>
+
+  {% if trending_books %}
+  <section
+    class="suggestion-section"
+    aria-labelledby="recommended-books-heading"
+  >
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Recommended Instead</p>
+        <h2 id="recommended-books-heading">You might like these</h2>
+      </div>
+    </div>
+
+    <div class="suggestion-grid" aria-label="Recommended books">
+      {% for book in trending_books %}
+      <a
+        class="suggestion-card"
+        href="{{ url_for('book_detail', slug=book.slug) }}"
+        aria-label="View details for {{ book.title }} by {{ book.author }}"
+      >
+        <img
+          src="{{ book.cover }}"
+          alt="Cover of {{ book.title }}"
+          loading="lazy"
+          onerror="
+            this.onerror = null;
+            this.src = 'https://placehold.co/200x300?text=No+Cover';
+          "
+        />
+
+        <div class="suggestion-card-content">
+          <span>{{ book.category if book.category else "Fantasy" }}</span>
+          <h3>{{ book.title }}</h3>
+          <p>by {{ book.author }}</p>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %} {% endif %}
 </section>
-{% endif %} {% endif %} {% endif %} {% endblock %}
+{% endif %} {% endblock %}

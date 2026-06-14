@@ -1,9 +1,10 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} {% block title %}Reading List | Bookiverse{% endblock
+%} {% block content %}
 
-<section class="hero-panel reading-hero">
+<section class="hero-panel reading-hero" aria-labelledby="reading-list-title">
   <div>
     <p class="eyebrow">Your Collection</p>
-    <h1>Your Reading List</h1>
+    <h1 id="reading-list-title">Your Reading List</h1>
     <p>
       Track your fantasy books, update your reading status, mark books as
       finished, and add an optional rating or comment.
@@ -12,14 +13,18 @@
 </section>
 
 {% with messages = get_flashed_messages() %} {% if messages %}
-<div class="flash-messages page-alerts">
+<div class="flash-messages page-alerts" aria-live="polite" aria-atomic="true">
   {% for message in messages %}
-  <div class="alert alert-success" role="alert">{{ message }}</div>
+  <div class="alert alert-success" role="status">{{ message }}</div>
   {% endfor %}
 </div>
 {% endif %} {% endwith %}
 
-<section class="stats-grid">
+<section class="stats-grid" aria-labelledby="reading-stats-heading">
+  <h2 id="reading-stats-heading" class="visually-hidden">
+    Reading list statistics
+  </h2>
+
   <div class="stats-card">
     <span>Total Books</span>
     <strong>{{ stats.total_books }}</strong>
@@ -53,205 +58,271 @@
 
 {% if reading_list %}
 
-<div class="book-grid">
-  {% for book in reading_list %}
+<section aria-labelledby="reading-list-books-heading">
+  <h2 id="reading-list-books-heading" class="visually-hidden">
+    Books in your reading list
+  </h2>
 
-  <div class="book-card reading-card" id="reading-book-{{ loop.index }}">
-    <a
-      class="book-detail-link cover-wrap"
-      href="{{ url_for('book_detail', slug=book.slug) }}"
+  <div class="book-grid" aria-label="Reading list books">
+    {% for book in reading_list %}
+    <article
+      class="book-card reading-card"
+      id="reading-book-{{ loop.index }}"
+      aria-labelledby="reading-book-title-{{ loop.index }}"
     >
-      <img
-        class="book-cover"
-        src="{{ book.cover }}"
-        alt="{{ book.title }}"
-        loading="lazy"
-        onerror="
-          this.onerror = null;
-          this.src = 'https://placehold.co/200x300?text=No+Cover';
-        "
-      />
-    </a>
-
-    <div class="book-content">
-      <div class="book-meta">
-        <span>{{ book.category if book.category else "Uncategorised" }}</span>
-        <span>{{ book.type }}</span>
-        <span>{{ book.year }}</span>
-      </div>
-
-      <h3>
-        <a
-          class="book-title-link"
-          href="{{ url_for('book_detail', slug=book.slug) }}"
-        >
-          {{ book.title }}
-        </a>
-      </h3>
-
-      <p class="author">by {{ book.author }}</p>
-
-      <p class="description">
-        {{ book.description[:165] if book.description else "No description
-        available" }}{% if book.description and book.description|length > 165
-        %}...{% endif %}
-      </p>
-
-      {% if book.subjects %}
-      <div class="subject-list">
-        {% for subject in book.subjects[:3] %}
-        <span>{{ subject }}</span>
-        {% endfor %}
-      </div>
-      {% endif %} {% if book.status == "Finished" %}
-      <div class="status-pill finished">Finished</div>
-      {% elif book.status == "Currently Reading" %}
-      <div class="status-pill current">Currently Reading</div>
-      {% elif book.status == "Did Not Finish" %}
-      <div class="status-pill dnf">Did Not Finish</div>
-      {% else %}
-      <div class="status-pill want">Want to Read</div>
-      {% endif %}
-
-      <div class="reading-card-actions">
-        <form method="POST" action="{{ url_for('remove_book') }}">
-          <input type="hidden" name="title" value="{{ book.title }}" />
-          <input
-            type="hidden"
-            name="book_anchor"
-            value="reading-book-{{ loop.index }}"
-          />
-
-          <button class="btn btn-danger w-100" type="submit">Remove</button>
-        </form>
-
-        {% if book.status == "Want to Read" %}
-        <form method="POST" action="{{ url_for('update_status') }}">
-          <input type="hidden" name="title" value="{{ book.title }}" />
-          <input type="hidden" name="status" value="Currently Reading" />
-          <input
-            type="hidden"
-            name="book_anchor"
-            value="reading-book-{{ loop.index }}"
-          />
-
-          <button class="btn btn-success w-100" type="submit">
-            Start Reading
-          </button>
-        </form>
-        {% elif book.status == "Currently Reading" %}
-        <form method="POST" action="{{ url_for('update_status') }}">
-          <input type="hidden" name="title" value="{{ book.title }}" />
-          <input type="hidden" name="status" value="Finished" />
-          <input
-            type="hidden"
-            name="book_anchor"
-            value="rating-book-{{ loop.index }}"
-          />
-
-          <button class="btn btn-success w-100" type="submit">
-            Mark Finished
-          </button>
-        </form>
-        {% elif book.status == "Did Not Finish" %}
-        <form method="POST" action="{{ url_for('update_status') }}">
-          <input type="hidden" name="title" value="{{ book.title }}" />
-          <input type="hidden" name="status" value="Currently Reading" />
-          <input
-            type="hidden"
-            name="book_anchor"
-            value="reading-book-{{ loop.index }}"
-          />
-
-          <button class="btn btn-success w-100" type="submit">Restart</button>
-        </form>
-        {% endif %}
-      </div>
-
-      {% if book.status == "Currently Reading" or book.status == "Want to Read"
-      %}
-      <form
-        class="status-secondary-form"
-        method="POST"
-        action="{{ url_for('update_status') }}"
+      <a
+        class="book-detail-link cover-wrap"
+        href="{{ url_for('book_detail', slug=book.slug) }}"
+        aria-label="View details for {{ book.title }} by {{ book.author }}"
       >
-        <input type="hidden" name="title" value="{{ book.title }}" />
-        <input type="hidden" name="status" value="Did Not Finish" />
-        <input
-          type="hidden"
-          name="book_anchor"
-          value="reading-book-{{ loop.index }}"
+        <img
+          class="book-cover"
+          src="{{ book.cover }}"
+          alt="Cover of {{ book.title }}"
+          loading="lazy"
+          onerror="
+            this.onerror = null;
+            this.src = 'https://placehold.co/200x300?text=No+Cover';
+          "
         />
+      </a>
 
-        <button class="btn btn-outline-dark w-100" type="submit">
-          Mark DNF
-        </button>
-      </form>
-      {% endif %} {% if book.status == "Finished" %}
-      <div id="rating-book-{{ loop.index }}" class="rating-area">
-        {% if book.rating or book.review %}
-        <div class="saved-review-card">
-          {% if book.rating %}
-          <div class="saved-rating">
-            <span>Your Rating</span>
-            <strong>{{ book.rating }}/5</strong>
-          </div>
-          {% endif %} {% if book.review %}
-          <div class="saved-comment">
-            <span>Your Comment</span>
-            <p>{{ book.review }}</p>
-          </div>
-          {% endif %}
+      <div class="book-content">
+        <ul class="book-meta" aria-label="Book information">
+          <li>
+            <span
+              >{{ book.category if book.category else "Uncategorised" }}</span
+            >
+          </li>
+          <li>
+            <span>{{ book.type }}</span>
+          </li>
+          <li>
+            <span>{{ book.year }}</span>
+          </li>
+        </ul>
+
+        <h3 id="reading-book-title-{{ loop.index }}">
+          <a
+            class="book-title-link"
+            href="{{ url_for('book_detail', slug=book.slug) }}"
+          >
+            {{ book.title }}
+          </a>
+        </h3>
+
+        <p class="author">by {{ book.author }}</p>
+
+        <p class="description">
+          {{ book.description[:165] if book.description else "No description
+          available" }}{% if book.description and book.description|length > 165
+          %}...{% endif %}
+        </p>
+
+        {% if book.subjects %}
+        <ul class="subject-list" aria-label="Subjects">
+          {% for subject in book.subjects[:3] %}
+          <li><span>{{ subject }}</span></li>
+          {% endfor %}
+        </ul>
+        {% endif %} {% if book.status == "Finished" %}
+        <div class="status-pill finished" aria-label="Status: Finished">
+          Finished
+        </div>
+        {% elif book.status == "Currently Reading" %}
+        <div class="status-pill current" aria-label="Status: Currently Reading">
+          Currently Reading
+        </div>
+        {% elif book.status == "Did Not Finish" %}
+        <div class="status-pill dnf" aria-label="Status: Did Not Finish">
+          Did Not Finish
         </div>
         {% else %}
+        <div class="status-pill want" aria-label="Status: Want to Read">
+          Want to Read
+        </div>
+        {% endif %}
+
+        <div
+          class="reading-card-actions"
+          aria-label="Actions for {{ book.title }}"
+        >
+          <form
+            method="POST"
+            action="{{ url_for('remove_book') }}"
+            aria-label="Remove {{ book.title }} from reading list"
+          >
+            <input type="hidden" name="title" value="{{ book.title }}" />
+            <input
+              type="hidden"
+              name="book_anchor"
+              value="reading-book-{{ loop.index }}"
+            />
+
+            <button class="btn btn-danger w-100" type="submit">Remove</button>
+          </form>
+
+          {% if book.status == "Want to Read" %}
+          <form
+            method="POST"
+            action="{{ url_for('update_status') }}"
+            aria-label="Mark {{ book.title }} as currently reading"
+          >
+            <input type="hidden" name="title" value="{{ book.title }}" />
+            <input type="hidden" name="status" value="Currently Reading" />
+            <input
+              type="hidden"
+              name="book_anchor"
+              value="reading-book-{{ loop.index }}"
+            />
+
+            <button class="btn btn-success w-100" type="submit">
+              Start Reading
+            </button>
+          </form>
+          {% elif book.status == "Currently Reading" %}
+          <form
+            method="POST"
+            action="{{ url_for('update_status') }}"
+            aria-label="Mark {{ book.title }} as finished"
+          >
+            <input type="hidden" name="title" value="{{ book.title }}" />
+            <input type="hidden" name="status" value="Finished" />
+            <input
+              type="hidden"
+              name="book_anchor"
+              value="rating-book-{{ loop.index }}"
+            />
+
+            <button class="btn btn-success w-100" type="submit">
+              Mark Finished
+            </button>
+          </form>
+          {% elif book.status == "Did Not Finish" %}
+          <form
+            method="POST"
+            action="{{ url_for('update_status') }}"
+            aria-label="Restart reading {{ book.title }}"
+          >
+            <input type="hidden" name="title" value="{{ book.title }}" />
+            <input type="hidden" name="status" value="Currently Reading" />
+            <input
+              type="hidden"
+              name="book_anchor"
+              value="reading-book-{{ loop.index }}"
+            />
+
+            <button class="btn btn-success w-100" type="submit">Restart</button>
+          </form>
+          {% endif %}
+        </div>
+
+        {% if book.status == "Currently Reading" or book.status == "Want to
+        Read" %}
         <form
-          class="combined-review-form"
+          class="status-secondary-form"
           method="POST"
-          action="{{ url_for('review_book') }}"
+          action="{{ url_for('update_status') }}"
+          aria-label="Mark {{ book.title }} as did not finish"
         >
           <input type="hidden" name="title" value="{{ book.title }}" />
+          <input type="hidden" name="status" value="Did Not Finish" />
           <input
             type="hidden"
             name="book_anchor"
-            value="rating-book-{{ loop.index }}"
+            value="reading-book-{{ loop.index }}"
           />
 
-          <label class="form-label">Optional rating</label>
-          <select class="form-select" name="rating">
-            <option value="">No star rating</option>
-            <option value="1">1 / 5</option>
-            <option value="2">2 / 5</option>
-            <option value="3">3 / 5</option>
-            <option value="4">4 / 5</option>
-            <option value="5">5 / 5</option>
-          </select>
-
-          <label class="form-label review-text-label">Optional comment</label>
-          <textarea
-            class="form-control"
-            name="review"
-            rows="4"
-            placeholder="Leave a short comment if you want..."
-          ></textarea>
-
-          <button class="btn btn-primary review-save-button" type="submit">
-            Save Rating / Comment
+          <button class="btn btn-outline-dark w-100" type="submit">
+            Mark DNF
           </button>
         </form>
+        {% endif %} {% if book.status == "Finished" %}
+        <div
+          id="rating-book-{{ loop.index }}"
+          class="rating-area"
+          aria-labelledby="review-heading-{{ loop.index }}"
+        >
+          <h4 id="review-heading-{{ loop.index }}" class="visually-hidden">
+            Rating and review for {{ book.title }}
+          </h4>
+
+          {% if book.rating or book.review %}
+          <div class="saved-review-card">
+            {% if book.rating %}
+            <div class="saved-rating">
+              <span>Your Rating</span>
+              <strong>{{ book.rating }}/5</strong>
+            </div>
+            {% endif %} {% if book.review %}
+            <div class="saved-comment">
+              <span>Your Comment</span>
+              <p>{{ book.review }}</p>
+            </div>
+            {% endif %}
+          </div>
+          {% else %}
+          <form
+            class="combined-review-form"
+            method="POST"
+            action="{{ url_for('review_book') }}"
+            aria-label="Save rating or comment for {{ book.title }}"
+          >
+            <input type="hidden" name="title" value="{{ book.title }}" />
+            <input
+              type="hidden"
+              name="book_anchor"
+              value="rating-book-{{ loop.index }}"
+            />
+
+            <label class="form-label" for="rating-{{ loop.index }}">
+              Optional rating
+            </label>
+            <select
+              class="form-select"
+              id="rating-{{ loop.index }}"
+              name="rating"
+            >
+              <option value="">No star rating</option>
+              <option value="1">1 / 5</option>
+              <option value="2">2 / 5</option>
+              <option value="3">3 / 5</option>
+              <option value="4">4 / 5</option>
+              <option value="5">5 / 5</option>
+            </select>
+
+            <label
+              class="form-label review-text-label"
+              for="review-{{ loop.index }}"
+            >
+              Optional comment
+            </label>
+            <textarea
+              class="form-control"
+              id="review-{{ loop.index }}"
+              name="review"
+              rows="4"
+              placeholder="Leave a short comment if you want..."
+            ></textarea>
+
+            <button class="btn btn-primary review-save-button" type="submit">
+              Save Rating / Comment
+            </button>
+          </form>
+          {% endif %}
+        </div>
         {% endif %}
       </div>
-      {% endif %}
-    </div>
+    </article>
+    {% endfor %}
   </div>
-
-  {% endfor %}
-</div>
+</section>
 
 {% else %}
 
-<section class="empty-state">
+<section class="empty-state" aria-labelledby="empty-reading-list-heading">
   <p class="eyebrow">No books yet</p>
-  <h2>Your reading list is empty</h2>
+  <h2 id="empty-reading-list-heading">Your reading list is empty</h2>
   <p>
     Start exploring the catalogue and add a few fantasy books to your personal
     list.

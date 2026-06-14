@@ -15,11 +15,14 @@
 
 html {
   scroll-behavior: auto;
+  min-height: 100%;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   font-family: Arial, sans-serif;
   color: var(--ink);
   background:
@@ -29,6 +32,79 @@ body {
       transparent 28rem
     ),
     linear-gradient(180deg, #fffaf2 0%, #f2e7d8 100%);
+}
+
+/* Footer */
+.site-footer {
+  flex-shrink: 0;
+  margin-top: auto;
+  margin-bottom: 0;
+  background: linear-gradient(135deg, #15100e, #263f35);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 18px 0;
+}
+
+.footer-brand {
+  max-width: 620px;
+}
+
+.footer-logo {
+  display: block;
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.7px;
+  line-height: 1.1;
+  margin-bottom: 5px;
+}
+
+.footer-brand p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.footer-top-link {
+  flex: 0 0 auto;
+  color: rgba(255, 255, 255, 0.84);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 7px 11px;
+  border-radius: 999px;
+}
+
+.footer-top-link:hover,
+.footer-top-link:focus {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Footer responsive */
+@media (max-width: 767px) {
+  .footer-inner {
+    display: block;
+    padding: 20px 22px;
+    text-align: center;
+  }
+
+  .footer-brand {
+    max-width: none;
+  }
+
+  .footer-top-link {
+    display: inline-block;
+    margin-top: 12px;
+  }
 }
 
 /* Header */
@@ -96,6 +172,8 @@ body {
 .page-shell {
   padding-top: 16px;
   padding-bottom: 40px;
+  flex: 1 0 auto;
+  width: 100%;
 }
 
 .flash-messages {
@@ -812,11 +890,6 @@ button.btn-outline-dark:focus {
   color: var(--muted);
   font-size: 12.5px;
   font-weight: 800;
-}
-
-.filter-actions {
-  display: flex;
-  gap: 8px;
 }
 
 /* Section headings */
@@ -1585,6 +1658,147 @@ button.btn-outline-dark:focus {
   border-radius: 999px;
   font-size: 11px;
   font-weight: 900;
+}
+
+/* =========================================
+   Accessibility helpers
+   ========================================= */
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  top: -48px;
+  left: 16px;
+  z-index: 10000;
+  padding: 10px 14px;
+  background: #ffffff;
+  color: #000000;
+  border: 2px solid #000000;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  top: 16px;
+}
+
+/* Screen-reader-only content */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Strong visible keyboard focus */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible {
+  outline: 3px solid #0d6efd;
+  outline-offset: 3px;
+}
+
+/* Improve focus styling for custom buttons/links */
+.btn:focus-visible,
+.nav-link:focus-visible,
+.book-title-link:focus-visible,
+.book-detail-link:focus-visible,
+.back-link:focus-visible,
+.carousel-book:focus-visible,
+.related-book-card:focus-visible,
+.suggestion-card:focus-visible {
+  outline: 3px solid #0d6efd;
+  outline-offset: 3px;
+}
+
+/* Make the main content target visible when skip link lands */
+main:focus {
+  outline: none;
+}
+
+/* =========================================
+   Semantic list resets for updated templates
+   ========================================= */
+
+.book-meta,
+.subject-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.book-meta li,
+.subject-list li {
+  margin: 0;
+  padding: 0;
+}
+
+.book-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+
+.subject-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 3px 0 11px;
+}
+
+/* Preserve existing chip appearance */
+.book-meta li span,
+.subject-list li span {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* =========================================
+   Accessible helper text / alerts
+   ========================================= */
+
+.form-text {
+  margin-top: 6px;
+  color: #5b514b;
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.alert[role="status"],
+.alert[role="alert"] {
+  line-height: 1.45;
+}
+
+/* =========================================
+   Reading list / search / books card semantics
+   ========================================= */
+
+.book-card article,
+article.book-card,
+article.reading-card {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Prevent list-style bullets from appearing inside semantic card lists */
+.book-card .book-meta,
+.book-card .subject-list,
+.reading-card .book-meta,
+.reading-card .subject-list,
+.related-books-section .subject-list,
+.suggestion-section .subject-list {
+  list-style: none;
+  padding-left: 0;
 }
 
 /* Responsive: large monitors */
