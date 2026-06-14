@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from data import books
 import re
+import random
 
 app = Flask(__name__)
 
@@ -12,7 +13,29 @@ reading_list = []
 
 @app.route("/")
 def home():
-    return render_template("home.html")
+    # Randomly select books with cover images for the homepage carousel
+    available_books = [
+        book for book in books
+        if book.get("cover") and "placehold.co" not in book.get("cover")
+    ]
+
+    selected_books = random.sample(
+        available_books,
+        min(14, len(available_books))
+    )
+
+    carousel_books = []
+
+    for book in selected_books:
+        carousel_books.append({
+            **book,
+            "slug": create_slug(book["title"])
+        })
+
+    return render_template(
+        "home.html",
+        carousel_books=carousel_books
+    )
 
 
 # Finds a book in data.py by title

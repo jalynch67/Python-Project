@@ -13,6 +13,7 @@
       <a class="btn btn-primary" href="{{ url_for('books_page') }}">
         Browse Books
       </a>
+
       <a
         class="btn btn-outline-light"
         href="{{ url_for('reading_list_page') }}"
@@ -22,6 +23,41 @@
     </div>
   </div>
 </section>
+
+{% if carousel_books %}
+<section class="cover-carousel-section">
+  <div class="carousel-heading">
+    <div>
+      <p class="eyebrow">Featured Shelf</p>
+      <h2>Discover your next fantasy read</h2>
+    </div>
+
+    <p>A rotating shelf of books from the Bookiverse catalogue.</p>
+  </div>
+
+  <div class="cover-carousel">
+    <div class="cover-carousel-track">
+      {% for book in carousel_books %}
+      <a
+        class="carousel-book"
+        href="{{ url_for('book_detail', slug=book.slug) }}"
+      >
+        <img src="{{ book.cover }}" alt="{{ book.title }}" loading="lazy" />
+        <span>{{ book.title }}</span>
+      </a>
+      {% endfor %} {% for book in carousel_books %}
+      <a
+        class="carousel-book"
+        href="{{ url_for('book_detail', slug=book.slug) }}"
+      >
+        <img src="{{ book.cover }}" alt="{{ book.title }}" loading="lazy" />
+        <span>{{ book.title }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
 
 <section class="feature-grid">
   <div class="feature-card">

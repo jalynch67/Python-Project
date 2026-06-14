@@ -245,6 +245,137 @@ body {
   margin-bottom: 0;
 }
 
+/* Homepage animated book cover carousel */
+.cover-carousel-section {
+  margin-top: 26px;
+  padding: 22px;
+  background: rgba(255, 250, 242, 0.88);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.carousel-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 20px;
+  margin-bottom: 16px;
+}
+
+.carousel-heading h2 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -0.8px;
+}
+
+.carousel-heading p {
+  margin: 0;
+  max-width: 420px;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+
+.cover-carousel {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  padding: 4px 0;
+}
+
+.cover-carousel::before,
+.cover-carousel::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 80px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.cover-carousel::before {
+  left: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 250, 242, 1),
+    rgba(255, 250, 242, 0)
+  );
+}
+
+.cover-carousel::after {
+  right: 0;
+  background: linear-gradient(
+    270deg,
+    rgba(255, 250, 242, 1),
+    rgba(255, 250, 242, 0)
+  );
+}
+
+.cover-carousel-track {
+  display: flex;
+  gap: 18px;
+  width: max-content;
+  animation: bookShelfScroll 42s linear infinite;
+}
+
+.cover-carousel:hover .cover-carousel-track {
+  animation-play-state: paused;
+}
+
+.carousel-book {
+  width: 132px;
+  flex: 0 0 auto;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.carousel-book img {
+  width: 132px;
+  height: 198px;
+  object-fit: contain;
+  padding: 7px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #eadcc8, #fff8eb);
+  border: 1px solid rgba(22, 17, 15, 0.1);
+  box-shadow: 0 10px 22px rgba(27, 18, 10, 0.12);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.carousel-book span {
+  display: block;
+  margin-top: 8px;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.carousel-book:hover img {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 16px 30px rgba(27, 18, 10, 0.18);
+}
+
+.carousel-book:hover span {
+  color: var(--forest);
+}
+
+@keyframes bookShelfScroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 /* Compact filter panel */
 .filter-panel {
   margin-bottom: 14px;
