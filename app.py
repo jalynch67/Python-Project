@@ -16,34 +16,6 @@ app.secret_key = "mysecretkey"
 
 READING_LIST_FILE = "reading_list.json"
 
-BOOK_REQUESTS_FILE = "book_requests.json"
-
-
-def load_book_requests():
-    if os.path.exists(BOOK_REQUESTS_FILE):
-        try:
-            with open(BOOK_REQUESTS_FILE, "r", encoding="utf-8") as file:
-                return json.load(file)
-        except json.JSONDecodeError:
-            return []
-
-    return []
-
-
-def save_book_request(form_data):
-    requests_list = load_book_requests()
-
-    requests_list.append({
-        "name": form_data["name"],
-        "email": form_data["email"],
-        "book_title": form_data["book_title"],
-        "author": form_data["author"],
-        "reason": form_data["reason"]
-    })
-
-    with open(BOOK_REQUESTS_FILE, "w", encoding="utf-8") as file:
-        json.dump(requests_list, file, indent=4)
-
 
 # Creates a URL-friendly version of a book title
 def create_slug(title):
@@ -617,6 +589,7 @@ def search():
     )
 
 
+# Sends the submitted book request to the configured email address using SMTP.
 def send_book_request_email(form_data):
     smtp_server = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
     smtp_port = int(os.environ.get("SMTP_PORT", 587))
@@ -899,29 +872,6 @@ def review_book():
     return redirect(redirect_url)
 
 
-# Rating system - kept for compatibility with any older forms
-@app.route("/rate-book", methods=["POST"])
-def rate_book():
-    title = request.form.get("title")
-    rating = request.form.get("rating")
-    book_anchor = request.form.get("book_anchor")
-
-    for book in reading_list:
-        if book["title"] == title and book.get("status") == "Finished":
-            if rating:
-                book["rating"] = int(rating)
-            break
-
-    save_reading_list()
-
-    flash("Rating saved.")
-
-    redirect_url = url_for("reading_list_page")
-
-    if book_anchor:
-        redirect_url = redirect_url + f"#{book_anchor}"
-
-    return redirect(redirect_url)
 
 
 if __name__ == "__main__":
