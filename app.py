@@ -8,6 +8,7 @@ from difflib import SequenceMatcher
 import smtplib
 import ssl
 from email.message import EmailMessage
+import traceback
 
 app = Flask(__name__)
 
@@ -679,8 +680,8 @@ def contact():
 
         name_pattern = r"^[A-Za-zÀ-ÿ .'-]+$"
         author_pattern = r"^[A-Za-zÀ-ÿ .'-]+$"
-        title_pattern = r"^[A-Za-z0-9À-ÿ &:'.,!?()\\-/]+$"
-        email_pattern = r"^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+        title_pattern = r"^[A-Za-z0-9À-ÿ &:'.,!?()/ -]+$"
+        email_pattern = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
 
         if not form_data["name"]:
             errors.append("Name is required.")
@@ -747,10 +748,11 @@ def contact():
                     "reason": ""
                 }
 
-            except Exception:
+            except Exception as e:
+                print("Email send failed:", repr(e))
+                traceback.print_exc()
                 errors.append(
-                    "Your request could not be sent right now. "
-                    "Please try again later."
+                    "Your request could not be sent right now. Please try again later."
                 )
 
     return render_template(
