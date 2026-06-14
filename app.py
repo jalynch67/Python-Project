@@ -2,14 +2,95 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from data import books
 import re
 import random
+import json
+import os
 from difflib import SequenceMatcher
 
 app = Flask(__name__)
 
 app.secret_key = "mysecretkey"
 
+READING_LIST_FILE = "reading_list.json"
+
+
+# Creates a URL-friendly version of a book title
+def create_slug(title):
+    slug = title.lower()
+    slug = re.sub(r"[^a-z0-9]+", "-", slug)
+    slug = slug.strip("-")
+    return slug
+
+
+# Finds a book in data.py by title
+def find_book_by_title(title):
+    for book in books:
+        if book["title"] == title:
+            return book
+
+    return None
+
+
+# Finds a book in data.py by its URL slug
+def find_book_by_slug(slug):
+    for book in books:
+        if create_slug(book["title"]) == slug:
+            return book
+
+    return None
+
+
+# Makes older reading list items compatible with the new status system
+def normalise_reading_list_book(saved_book):
+    title = saved_book.get("title")
+    original_book = find_book_by_title(title)
+
+    if original_book:
+        book = {
+            **original_book,
+            **saved_book
+        }
+    else:
+        book = saved_book
+
+    if "slug" not in book and book.get("title"):
+        book["slug"] = create_slug(book["title"])
+
+    if "status" not in book:
+        if book.get("finished"):
+            book["status"] = "Finished"
+        else:
+            book["status"] = "Want to Read"
+
+    return book
+
+
+# Loads reading list data from a JSON file
+def load_reading_list():
+    if os.path.exists(READING_LIST_FILE):
+        try:
+            with open(READING_LIST_FILE, "r", encoding="utf-8") as file:
+                saved_books = json.load(file)
+
+            return [
+                normalise_reading_list_book(book)
+                for book in saved_books
+            ]
+
+        except json.JSONDecodeError:
+            print("reading_list.json is empty or invalid. Starting with an empty reading list.")
+            return []
+
+    return []
+
+
+# Saves reading list data to a JSON file
+def save_reading_list():
+    with open(READING_LIST_FILE, "w", encoding="utf-8") as file:
+        json.dump(reading_list, file, indent=4)
+
+
 # Reading List
-reading_list = []
+reading_list = load_reading_list()
 
 
 @app.route("/")
@@ -39,32 +120,6 @@ def home():
     )
 
 
-# Finds a book in data.py by title
-def find_book_by_title(title):
-    for book in books:
-        if book["title"] == title:
-            return book
-
-    return None
-
-
-# Creates a URL-friendly version of a book title
-def create_slug(title):
-    slug = title.lower()
-    slug = re.sub(r"[^a-z0-9]+", "-", slug)
-    slug = slug.strip("-")
-    return slug
-
-
-# Finds a book in data.py by its URL slug
-def find_book_by_slug(slug):
-    for book in books:
-        if create_slug(book["title"]) == slug:
-            return book
-
-    return None
-
-
 # Checks whether a book is already in the user's reading list
 def is_book_in_reading_list(title):
     for book in reading_list:
@@ -72,6 +127,74 @@ def is_book_in_reading_list(title):
             return True
 
     return False
+
+
+# Calculates dashboard stats for the reading list page
+def get_reading_stats():
+    total_books = len(reading_list)
+
+    want_to_read_count = 0
+    currently_reading_count = 0
+    finished_count = 0
+    dnf_count = 0
+
+    ratings = []
+
+    for book in reading_list:
+        status = book.get("status", "Want to Read")
+
+        if status == "Want to Read":
+            want_to_read_count += 1
+        elif status == "Currently Reading":
+            currently_reading_count += 1
+        elif status == "Finished":
+            finished_count += 1
+        elif status == "Did Not Finish":
+            dnf_count += 1
+
+        if book.get("rating"):
+            ratings.append(int(book["rating"]))
+
+    if ratings:
+        average_rating = round(sum(ratings) / len(ratings), 1)
+    else:
+        average_rating = "N/A"
+
+    return {
+        "total_books": total_books,
+        "want_to_read_count": want_to_read_count,
+        "currently_reading_count": currently_reading_count,
+        "finished_count": finished_count,
+        "dnf_count": dnf_count,
+        "average_rating": average_rating
+    }
+
+
+# Gets related books for the book detail page
+def get_related_books(current_book):
+    related_books = []
+
+    current_title = current_book.get("title")
+    current_author = current_book.get("author")
+    current_category = current_book.get("category")
+    current_subjects = set(current_book.get("subjects", []))
+
+    for book in books:
+        if book.get("title") == current_title:
+            continue
+
+        same_author = book.get("author") == current_author
+        same_category = book.get("category") == current_category
+        shared_subjects = bool(current_subjects.intersection(set(book.get("subjects", []))))
+
+        if same_author or same_category or shared_subjects:
+            related_books.append({
+                **book,
+                "slug": create_slug(book["title"]),
+                "in_reading_list": is_book_in_reading_list(book["title"])
+            })
+
+    return related_books[:4]
 
 
 # Available Books List
@@ -154,13 +277,25 @@ def book_detail(slug):
         "in_reading_list": is_book_in_reading_list(book["title"])
     }
 
-    return render_template("book_detail.html", book=book)
+    related_books = get_related_books(book)
+
+    return render_template(
+        "book_detail.html",
+        book=book,
+        related_books=related_books
+    )
 
 
 # User Reading List
 @app.route("/reading-list")
 def reading_list_page():
-    return render_template("reading_list.html", reading_list=reading_list)
+    stats = get_reading_stats()
+
+    return render_template(
+        "reading_list.html",
+        reading_list=reading_list,
+        stats=stats
+    )
 
 
 # Normalises text for better searching
@@ -209,7 +344,6 @@ def get_search_score(book, search_term):
 
     score = 0
 
-    # Strongest matches
     if search_term == title:
         score += 100
 
@@ -222,7 +356,6 @@ def get_search_score(book, search_term):
     if search_term in title:
         score += 60
 
-    # Useful secondary matches
     if matches_word_start(search_term, author):
         score += 45
 
@@ -244,14 +377,12 @@ def get_search_score(book, search_term):
     if search_term in description:
         score += 10
 
-    # Light fuzzy matching for typos, mostly useful for longer searches
     if len(search_term) >= 3:
         title_similarity = SequenceMatcher(None, search_term, title).ratio()
 
         if title_similarity > 0.55:
             score += int(title_similarity * 30)
 
-    # General fallback: if the search appears anywhere in the combined text
     if search_term in searchable_text:
         score += 5
 
@@ -362,8 +493,11 @@ def add_book():
         reading_list.append({
             **selected_book,
             "slug": create_slug(selected_book["title"]),
-            "finished": False
+            "status": "Want to Read",
+            "rating": None
         })
+
+        save_reading_list()
 
         flash("Your book has been added to your reading list.")
     else:
@@ -388,6 +522,8 @@ def remove_book():
             reading_list.remove(book)
             break
 
+    save_reading_list()
+
     flash("Book removed from your reading list.")
 
     redirect_url = request.referrer or url_for("reading_list_page")
@@ -398,7 +534,46 @@ def remove_book():
     return redirect(redirect_url)
 
 
-# Mark finished
+# Update reading status
+@app.route("/update-status", methods=["POST"])
+def update_status():
+    title = request.form.get("title")
+    status = request.form.get("status")
+    book_anchor = request.form.get("book_anchor")
+
+    allowed_statuses = [
+        "Want to Read",
+        "Currently Reading",
+        "Finished",
+        "Did Not Finish"
+    ]
+
+    if status not in allowed_statuses:
+        flash("Invalid reading status.")
+        return redirect(url_for("reading_list_page"))
+
+    for book in reading_list:
+        if book["title"] == title:
+            book["status"] = status
+
+            if status != "Finished":
+                book["rating"] = None
+
+            break
+
+    save_reading_list()
+
+    flash(f"Book status updated to {status}.")
+
+    redirect_url = url_for("reading_list_page")
+
+    if book_anchor:
+        redirect_url = redirect_url + f"#{book_anchor}"
+
+    return redirect(redirect_url)
+
+
+# Mark finished - kept for compatibility with older forms
 @app.route("/finish-book", methods=["POST"])
 def finish_book():
     title = request.form.get("title")
@@ -406,8 +581,10 @@ def finish_book():
 
     for book in reading_list:
         if book["title"] == title:
-            book["finished"] = True
+            book["status"] = "Finished"
             break
+
+    save_reading_list()
 
     flash("Book marked as finished.")
 
@@ -427,9 +604,11 @@ def rate_book():
     book_anchor = request.form.get("book_anchor")
 
     for book in reading_list:
-        if book["title"] == title and book.get("finished"):
+        if book["title"] == title and book.get("status") == "Finished":
             book["rating"] = int(rating)
             break
+
+    save_reading_list()
 
     flash("Rating saved.")
 

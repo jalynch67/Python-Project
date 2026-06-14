@@ -20,6 +20,7 @@
     <p class="book-detail-author">by {{ book.author }}</p>
 
     <div class="book-meta detail-meta">
+      <span>{{ book.category if book.category else "Uncategorised" }}</span>
       <span>{{ book.type }}</span>
       <span>{{ book.year }}</span>
     </div>
@@ -82,4 +83,42 @@
   </div>
 </section>
 
-{% endblock %}
+{% if related_books %}
+<section class="related-books-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">More Like This</p>
+      <h2>Related Books</h2>
+    </div>
+
+    <p class="section-subtitle">
+      Similar books based on author, category, or subject.
+    </p>
+  </div>
+
+  <div class="related-books-grid">
+    {% for related in related_books %}
+    <a
+      class="related-book-card"
+      href="{{ url_for('book_detail', slug=related.slug) }}"
+    >
+      <img
+        src="{{ related.cover }}"
+        alt="{{ related.title }}"
+        loading="lazy"
+        onerror="
+          this.onerror = null;
+          this.src = 'https://placehold.co/200x300?text=No+Cover';
+        "
+      />
+
+      <div>
+        <h3>{{ related.title }}</h3>
+        <p>by {{ related.author }}</p>
+        <span>{{ related.category if related.category else "Fantasy" }}</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %} {% endblock %}
