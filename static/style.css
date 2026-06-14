@@ -902,6 +902,89 @@ body {
   background: rgba(23, 63, 53, 0.16);
 }
 
+/* Search recommendations / trending section */
+.suggestion-section {
+  margin-top: 24px;
+  padding: 22px;
+  background: rgba(255, 250, 242, 0.88);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+}
+
+.suggestion-section .section-heading {
+  margin-bottom: 16px;
+}
+
+.suggestion-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.suggestion-card {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  min-height: 152px;
+  padding: 13px;
+  color: var(--ink);
+  text-decoration: none;
+  background: rgba(255, 250, 242, 0.96);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 10px 24px rgba(27, 18, 10, 0.08);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.suggestion-card:hover {
+  transform: translateY(-3px);
+  color: var(--ink);
+  border-color: rgba(23, 63, 53, 0.24);
+  box-shadow: 0 18px 34px rgba(27, 18, 10, 0.14);
+}
+
+.suggestion-card img {
+  width: 92px;
+  height: 132px;
+  object-fit: contain;
+  padding: 6px;
+  background: linear-gradient(180deg, #eadcc8, #fff8eb);
+  border: 1px solid rgba(22, 17, 15, 0.1);
+  border-radius: 14px;
+}
+
+.suggestion-card-content span {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 6px;
+  padding: 4px 8px;
+  color: var(--forest);
+  background: rgba(23, 63, 53, 0.1);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.suggestion-card-content h3 {
+  margin: 0 0 5px;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.suggestion-card-content p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+
 /* Empty state */
 .empty-state {
   text-align: center;
@@ -1102,127 +1185,4 @@ body {
   border-radius: 999px;
   font-size: 11px;
   font-weight: 900;
-}
-
-/* Responsive */
-@media (max-width: 1200px) {
-  .book-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .stats-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .related-books-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 900px) {
-  .book-grid,
-  .feature-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .home-hero {
-    padding: 34px;
-    min-height: 330px;
-  }
-
-  .hero-panel {
-    padding: 24px;
-  }
-
-  .book-detail-hero {
-    grid-template-columns: 1fr;
-  }
-
-  .book-detail-cover {
-    max-width: 360px;
-  }
-}
-
-@media (max-width: 768px) {
-  .filter-actions {
-    justify-content: flex-start;
-  }
-
-  .filter-actions .btn {
-    flex: 1;
-  }
-}
-
-@media (max-width: 620px) {
-  .nav-links {
-    gap: 6px;
-  }
-
-  .nav-links a {
-    padding: 7px 9px;
-    font-size: 14px;
-  }
-
-  .home-hero,
-  .hero-panel {
-    border-radius: 22px;
-    padding: 24px;
-  }
-
-  .home-hero {
-    min-height: 300px;
-  }
-
-  .home-hero h1,
-  .hero-panel h1 {
-    font-size: clamp(28px, 10vw, 42px);
-  }
-
-  .book-grid,
-  .feature-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .section-heading {
-    display: block;
-  }
-
-  .section-subtitle {
-    margin-top: 6px;
-  }
-
-  .book-cover {
-    height: 235px;
-  }
-
-  .filter-panel {
-    padding: 14px;
-  }
-
-  .reading-list-actions,
-  .reading-card-actions {
-    grid-template-columns: 1fr;
-    flex-direction: column;
-  }
-
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .related-books-section {
-    padding: 16px;
-  }
-
-  .related-books-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .related-book-card {
-    grid-template-columns: 76px minmax(0, 1fr);
-  }
-
-  .related-book-card img {
-    width: 76px;
-    height: 112px;
-  }
 }

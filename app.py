@@ -323,6 +323,56 @@ def matches_word_start(search_term, text):
     return False
 
 
+# Gets trending book suggestions for the Search page
+def get_trending_books():
+    trending_titles = [
+        "The Hobbit",
+        "The Fellowship of the Ring",
+        "A Game of Thrones",
+        "The Way of Kings",
+        "Mistborn: The Final Empire",
+        "Harry Potter and the Philosopher's Stone",
+        "The Name of the Wind",
+        "The Eye of the World",
+        "Fourth Wing",
+        "The Blade Itself"
+    ]
+
+    trending_books = []
+
+    for title in trending_titles:
+        book = find_book_by_title(title)
+
+        if book:
+            trending_books.append({
+                **book,
+                "slug": create_slug(book["title"]),
+                "in_reading_list": is_book_in_reading_list(book["title"])
+            })
+
+    # Fallback in case some titles are not in data.py
+    if len(trending_books) < 6:
+        for book in books:
+            if len(trending_books) >= 6:
+                break
+
+            already_added = any(
+                trending_book["title"] == book["title"]
+                for trending_book in trending_books
+            )
+
+            has_real_cover = book.get("cover") and "placehold.co" not in book.get("cover")
+
+            if not already_added and has_real_cover:
+                trending_books.append({
+                    **book,
+                    "slug": create_slug(book["title"]),
+                    "in_reading_list": is_book_in_reading_list(book["title"])
+                })
+
+    return trending_books[:6]
+
+
 # Gives each book a search score based on how strongly it matches
 def get_search_score(book, search_term):
     if not search_term:
@@ -410,12 +460,12 @@ def search():
         selected_category = request.args.get("category", "All")
         sort_by = request.args.get("sort", "relevance")
 
-    # Create category dropdown options from data.py
     category_options = sorted(
         set(book.get("category", "Uncategorised") for book in books)
     )
 
-    # Only search once the user has entered a term or selected a category
+    trending_books = get_trending_books()
+
     has_searched = bool(search_term) or selected_category != "All"
 
     if has_searched:
@@ -427,7 +477,6 @@ def search():
 
             search_score = get_search_score(book, search_term)
 
-            # If no search term is entered, category filtering alone should show results
             matches_search = bool(search_score) or not search_term
 
             if matches_search and matches_category:
@@ -438,7 +487,6 @@ def search():
                     "search_score": search_score
                 })
 
-    # Sort results
     if sort_by == "relevance":
         results = sorted(
             results,
@@ -466,7 +514,8 @@ def search():
         category_options=category_options,
         sort_by=sort_by,
         has_searched=has_searched,
-        result_count=len(results)
+        result_count=len(results),
+        trending_books=trending_books
     )
 
 

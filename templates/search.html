@@ -38,35 +38,28 @@
 
     <div class="col-lg-3 col-md-6">
       <label class="form-label">Category</label>
-      <select class="form-select form-select-lg" name="sort">
-        {% if sort_by == "relevance" %}
-        <option value="relevance" selected>Relevance</option>
+      <select class="form-select form-select-lg" name="category">
+        {% if selected_category == "All" %}
+        <option value="All" selected>All Categories</option>
         {% else %}
-        <option value="relevance">Relevance</option>
-        {% endif %} {% if sort_by == "title" %}
-        <option value="title" selected>Title A-Z</option>
+        <option value="All">All Categories</option>
+        {% endif %} {% for category in category_options %} {% if
+        selected_category == category %}
+        <option value="{{ category }}" selected>{{ category }}</option>
         {% else %}
-        <option value="title">Title A-Z</option>
-        {% endif %} {% if sort_by == "author" %}
-        <option value="author" selected>Author A-Z</option>
-        {% else %}
-        <option value="author">Author A-Z</option>
-        {% endif %} {% if sort_by == "year_old" %}
-        <option value="year_old" selected>Oldest First</option>
-        {% else %}
-        <option value="year_old">Oldest First</option>
-        {% endif %} {% if sort_by == "year_new" %}
-        <option value="year_new" selected>Newest First</option>
-        {% else %}
-        <option value="year_new">Newest First</option>
-        {% endif %}
+        <option value="{{ category }}">{{ category }}</option>
+        {% endif %} {% endfor %}
       </select>
     </div>
 
     <div class="col-lg-2 col-md-6">
       <label class="form-label">Sort By</label>
       <select class="form-select form-select-lg" name="sort">
-        {% if sort_by == "title" %}
+        {% if sort_by == "relevance" %}
+        <option value="relevance" selected>Relevance</option>
+        {% else %}
+        <option value="relevance">Relevance</option>
+        {% endif %} {% if sort_by == "title" %}
         <option value="title" selected>Title A-Z</option>
         {% else %}
         <option value="title">Title A-Z</option>
@@ -104,7 +97,46 @@
   </form>
 </section>
 
-{% if has_searched %}
+{% if not has_searched and trending_books %}
+<section class="suggestion-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Trending Picks</p>
+      <h2>Popular fantasy books to explore</h2>
+    </div>
+
+    <p class="section-subtitle">
+      Not sure what to search for? Start with these recommended titles from the
+      catalogue.
+    </p>
+  </div>
+
+  <div class="suggestion-grid">
+    {% for book in trending_books %}
+    <a
+      class="suggestion-card"
+      href="{{ url_for('book_detail', slug=book.slug) }}"
+    >
+      <img
+        src="{{ book.cover }}"
+        alt="{{ book.title }}"
+        loading="lazy"
+        onerror="
+          this.onerror = null;
+          this.src = 'https://placehold.co/200x300?text=No+Cover';
+        "
+      />
+
+      <div class="suggestion-card-content">
+        <span>{{ book.category if book.category else "Fantasy" }}</span>
+        <h3>{{ book.title }}</h3>
+        <p>by {{ book.author }}</p>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %} {% if has_searched %}
 
 <div class="section-heading">
   <div>
@@ -234,4 +266,38 @@
   </a>
 </section>
 
-{% endif %} {% endif %} {% endblock %}
+{% if trending_books %}
+<section class="suggestion-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Recommended Instead</p>
+      <h2>You might like these</h2>
+    </div>
+  </div>
+
+  <div class="suggestion-grid">
+    {% for book in trending_books %}
+    <a
+      class="suggestion-card"
+      href="{{ url_for('book_detail', slug=book.slug) }}"
+    >
+      <img
+        src="{{ book.cover }}"
+        alt="{{ book.title }}"
+        loading="lazy"
+        onerror="
+          this.onerror = null;
+          this.src = 'https://placehold.co/200x300?text=No+Cover';
+        "
+      />
+
+      <div class="suggestion-card-content">
+        <span>{{ book.category if book.category else "Fantasy" }}</span>
+        <h3>{{ book.title }}</h3>
+        <p>by {{ book.author }}</p>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %} {% endif %} {% endif %} {% endblock %}
