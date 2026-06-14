@@ -157,8 +157,6 @@ def home():
         "total": total_reading_list_books,
         "currently_reading": currently_reading_count,
         "finished": finished_count,
-        "want_to_read": want_to_read_count,
-        "dnf": dnf_count,
         "average_rating": average_rating
     }
 
@@ -870,8 +868,6 @@ def review_book():
         redirect_url = redirect_url + f"#{book_anchor}"
 
     return redirect(redirect_url)
-
-
 
 
 if __name__ == "__main__":
