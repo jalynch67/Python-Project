@@ -5,6 +5,9 @@ import random
 import json
 import os
 from difflib import SequenceMatcher
+import smtplib
+import ssl
+from email.message import EmailMessage
 
 app = Flask(__name__)
 
@@ -613,6 +616,46 @@ def search():
     )
 
 
+def send_book_request_email(form_data):
+    smtp_server = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
+    smtp_port = int(os.environ.get("SMTP_PORT", 587))
+    smtp_username = os.environ.get("SMTP_USERNAME")
+    smtp_password = os.environ.get("SMTP_PASSWORD")
+    contact_to_email = os.environ.get("CONTACT_TO_EMAIL")
+    mail_from = os.environ.get("MAIL_FROM", smtp_username)
+
+    if not smtp_username or not smtp_password or not contact_to_email:
+        raise ValueError("Email settings are missing. Check your environment variables.")
+
+    subject = f"New Book Request: {form_data['book_title']} by {form_data['author']}"
+
+    body = f"""
+New Book Request Submitted
+
+Name: {form_data['name']}
+Email: {form_data['email']}
+Book Title: {form_data['book_title']}
+Author: {form_data['author']}
+
+Reason:
+{form_data['reason']}
+""".strip()
+
+    msg = EmailMessage()
+    msg["Subject"] = subject
+    msg["From"] = mail_from
+    msg["To"] = contact_to_email
+    msg["Reply-To"] = form_data["email"]
+    msg.set_content(body)
+
+    context = ssl.create_default_context()
+
+    with smtplib.SMTP(smtp_server, smtp_port) as server:
+        server.starttls(context=context)
+        server.login(smtp_username, smtp_password)
+        server.send_message(msg)
+
+
 # Contact form
 @app.route("/contact", methods=["GET", "POST"])
 def contact():
@@ -634,17 +677,11 @@ def contact():
         form_data["author"] = request.form.get("author", "").strip()
         form_data["reason"] = request.form.get("reason", "").strip()
 
-        # Honeypot anti-bot field
-        website = request.form.get("website", "").strip()
-        if website:
-            errors.append("Invalid form submission.")
-
         name_pattern = r"^[A-Za-zÀ-ÿ .'-]+$"
         author_pattern = r"^[A-Za-zÀ-ÿ .'-]+$"
         title_pattern = r"^[A-Za-z0-9À-ÿ &:'.,!?()\\-/]+$"
         email_pattern = r"^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
 
-        # Required checks
         if not form_data["name"]:
             errors.append("Name is required.")
         if not form_data["email"]:
@@ -656,7 +693,6 @@ def contact():
         if not form_data["reason"]:
             errors.append("Reason is required.")
 
-        # Name validation
         if form_data["name"]:
             if len(form_data["name"]) < 2:
                 errors.append("Name must be at least 2 characters.")
@@ -665,14 +701,12 @@ def contact():
             elif not re.match(name_pattern, form_data["name"]):
                 errors.append("Name contains invalid characters.")
 
-        # Email validation
         if form_data["email"]:
             if len(form_data["email"]) > 120:
                 errors.append("Email must be 120 characters or fewer.")
             elif not re.match(email_pattern, form_data["email"]):
                 errors.append("Please enter a valid email address.")
 
-        # Book title validation
         if form_data["book_title"]:
             if len(form_data["book_title"]) < 2:
                 errors.append("Book title must be at least 2 characters.")
@@ -681,7 +715,6 @@ def contact():
             elif not re.match(title_pattern, form_data["book_title"]):
                 errors.append("Book title contains invalid characters.")
 
-        # Author validation
         if form_data["author"]:
             if len(form_data["author"]) < 2:
                 errors.append("Author name must be at least 2 characters.")
@@ -690,7 +723,6 @@ def contact():
             elif not re.match(author_pattern, form_data["author"]):
                 errors.append("Author name contains invalid characters.")
 
-        # Reason validation
         if form_data["reason"]:
             if len(form_data["reason"]) < 10:
                 errors.append("Reason must be at least 10 characters.")
@@ -700,20 +732,26 @@ def contact():
                 errors.append("Reason contains invalid characters.")
 
         if not errors:
-            save_book_request(form_data)
+            try:
+                send_book_request_email(form_data)
+                message = (
+                    f"Thank you, {form_data['name']}! "
+                    "Your book request was sent successfully."
+                )
 
-            message = (
-                f"Thank you, {form_data['name']}! "
-                "Your book request has been submitted successfully."
-            )
+                form_data = {
+                    "name": "",
+                    "email": "",
+                    "book_title": "",
+                    "author": "",
+                    "reason": ""
+                }
 
-            form_data = {
-                "name": "",
-                "email": "",
-                "book_title": "",
-                "author": "",
-                "reason": ""
-            }
+            except Exception:
+                errors.append(
+                    "Your request could not be sent right now. "
+                    "Please try again later."
+                )
 
     return render_template(
         "contact.html",
